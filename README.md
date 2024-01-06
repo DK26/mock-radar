@@ -1,6 +1,6 @@
 # mock-radar
 
-A server that mocks the QRadar server API behavior, to ease on developing integrations and avoid managing a full QRadar environment.
+A highly minimalist server that mocks QRadar API behavior, to ease on developing integrations and avoid managing a full QRadar environment.
 
 ## Why not simply mock locally?
 
