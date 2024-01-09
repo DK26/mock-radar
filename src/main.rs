@@ -1,8 +1,11 @@
+mod handlers;
+mod qradar;
+
 use axum::Router;
 
-const REGISTERED_TOKEN: &str = "aabbcccdd";
+const REGISTERED_TOKEN: &str = "d6391576-55d3-4c44-85d8-5665b0d2336f";
 const REGISTERED_USERNAME: &str = "admin";
-const REGISTERED_PASSWORD: &str = "password";
+const REGISTERED_PASSWORD: &str = "pass";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
