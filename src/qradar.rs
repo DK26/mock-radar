@@ -18,24 +18,30 @@ impl QRadarMock {
             reference_map: HashMap::new(),
         }
     }
-    pub(crate) fn add_to_reference_set(&mut self, _: permissions::Modifier, value: QRadarValue) {
+    pub(crate) fn add_to_reference_set(
+        &mut self,
+        _: permissions::AuthorizationToken,
+        value: QRadarValue,
+    ) {
         self.reference_set
             .insert(QRadarValue::String("hello, world".into()));
     }
 }
 
-// TODO: Create Roles which implement Into<Modifier> & Into<Reader>. Or, Into<ReferenceSetModifier> & Into<ReferenceSetReader> etc.
 mod permissions {
+    use crate::REGISTERED_TOKEN;
 
     struct InitializePreventer;
 
-    pub(crate) struct Modifier {
+    pub(crate) struct AuthorizationToken {
         preventer: InitializePreventer,
     }
 
-    impl Modifier {
-        pub(crate) fn validate(user_id: u64) -> Option<Self> {
-            None
+    impl AuthorizationToken {
+        pub(crate) fn validate(token: &str) -> Option<Self> {
+            (token == REGISTERED_TOKEN).then_some(Self {
+                preventer: InitializePreventer,
+            })
         }
     }
 }
