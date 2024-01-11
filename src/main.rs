@@ -1,4 +1,5 @@
 mod handlers;
+mod permissions;
 mod qradar;
 
 use axum::Router;
@@ -6,6 +7,7 @@ use axum::Router;
 const REGISTERED_TOKEN: &str = "d6391576-55d3-4c44-85d8-5665b0d2336f";
 const REGISTERED_USERNAME: &str = "admin";
 const REGISTERED_PASSWORD: &str = "pass";
+const REGISTERED_BASIC: &str = "YWRtaW46cGFzcw==";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -24,6 +26,7 @@ async fn root() -> String {
         TOKEN = {REGISTERED_TOKEN}
         USERNAME = {REGISTERED_USERNAME}
         PASSWORD = {REGISTERED_PASSWORD}
+        BASIC = {REGISTERED_BASIC}
     "#
     )
 }

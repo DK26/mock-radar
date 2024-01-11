@@ -1,48 +1,34 @@
 use std::collections::{HashMap, HashSet};
 
+use crate::permissions;
+
 #[derive(Hash, Eq, PartialEq, Debug)]
 enum QRadarValue {
-    Integer(u64),
-    String(String),
+    AlphaNumeric(String),
+    AlphaNumericIgnoreCase(String),
+    Numeric(u64),
+    Port(u16),
+    IP(String),
 }
 
 struct QRadarMock {
-    reference_set: HashSet<QRadarValue>,
-    reference_map: HashMap<String, QRadarValue>,
+    reference_sets: HashMap<String, HashSet<QRadarValue>>,
 }
 
 impl QRadarMock {
     pub(crate) fn new() -> Self {
         QRadarMock {
-            reference_set: HashSet::new(),
-            reference_map: HashMap::new(),
+            reference_sets: HashMap::new(),
         }
     }
     pub(crate) fn add_to_reference_set(
         &mut self,
         _: permissions::AuthorizationToken,
+        name: String,
         value: QRadarValue,
     ) {
-        self.reference_set
-            .insert(QRadarValue::String("hello, world".into()));
-    }
-}
-
-mod permissions {
-    use crate::REGISTERED_TOKEN;
-
-    struct InitializePreventer;
-
-    pub(crate) struct AuthorizationToken {
-        preventer: InitializePreventer,
-    }
-
-    impl AuthorizationToken {
-        pub(crate) fn validate(token: &str) -> Option<Self> {
-            (token == REGISTERED_TOKEN).then_some(Self {
-                preventer: InitializePreventer,
-            })
-        }
+        todo!()
+        // self.reference_sets.insert(name, value);
     }
 }
 
