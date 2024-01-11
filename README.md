@@ -24,7 +24,7 @@ I though I'd share my own work in case others find it useful. Who knows, maybe e
 
 ### Community
 
-You don't have to be a software developer! Feel free to [share your input in the discussions session](https://github.com/DK26/mock-radar/discussions/1) on about anything. 
+You don't have to be a software developer! Feel free to [share your input in the discussions section](https://github.com/DK26/mock-radar/discussions/) on about anything.
 
 From typo fixes, to sharing ideas, suggestions, issues, experiences, code and PRs.
 
