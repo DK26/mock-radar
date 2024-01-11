@@ -4,9 +4,9 @@ A highly minimalist server that mocks QRadar API behavior, to ease on developing
 
 ## Why not simply mock locally?
 
-You can do this. You'll have to mimic on your own how the API behaves and duplicate code whenever is required.
+You can do this. You'll have to mimic on your own the API behavior and duplicate code whenever is required.
 
-But, I am trying to achieve an accurate replicate and do not wish to repeat myself as I can have many projects using the same mock.
+But, what I am trying to achieve is an accurate replica and do not wish to repeat myself as I can have many projects using the same mock.
 
 I though I'd share my own work in case others find it useful. Who knows, maybe even collaborate and add their own mocked endpoints. This could be the start of something big. or not.
 
@@ -20,7 +20,15 @@ I though I'd share my own work in case others find it useful. Who knows, maybe e
 
 4. Growing community
 
-## Collaboration
+## Contribution, Collaboration & Licensing
+
+### Community
+
+You don't have to be a software developer! Feel free to [share your input in the discussions session](https://github.com/DK26/mock-radar/discussions/1) on about anything. 
+
+From typo fixes, to sharing ideas, suggestions, issues, experiences, code and PRs.
+
+### MIT License
 
 Everything here is licensed under MIT because I really do not see anything special here. It's simply a mock of the real thing.
 If you wish to open an issues, share ideas, request features or send your own PR, feel free. We'll discuss about it as we go.
