@@ -6,6 +6,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "*", features = ["full"] }
-axum = "*"
+axum = "0.7" # The web framework for building the application
+tower-http = { version = "0.5.1", features = [
+    "trace",
+] } # Provides middleware for HTTP services, like logging and compression
+tracing = "0.1" # Application-level tracing for structured and event-based logging
+tracing-subscriber = { version = "0.3", features = [
+    "env-filter",
+] } # Subscriber for handling and formatting tracing events
+tokio = { version = "1", features = [
+    "full",
+] } # Async runtime; 'full' includes all essential features
 anyhow = "*"
