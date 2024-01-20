@@ -32,6 +32,15 @@ async fn main() -> anyhow::Result<()> {
 
     info!("Serving QRadar mock on 127.0.0.1:3000");
 
+    println!(
+        r#"
+        TOKEN = {REGISTERED_TOKEN}
+        USERNAME = {REGISTERED_USERNAME}
+        PASSWORD = {REGISTERED_PASSWORD}
+        BASIC = {REGISTERED_BASIC}
+    "#
+    );
+
     axum::serve(listener, router).await?;
 
     Ok(())
