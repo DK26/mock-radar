@@ -1,15 +1,10 @@
-use std::{
-    collections::{HashMap, HashSet},
-    net::IpAddr,
-    str::FromStr,
-};
-
-use tracing::instrument;
+use std::{collections::HashSet, net::IpAddr, str::FromStr};
 
 use crate::permissions;
+use crate::qradar::QRadarMock;
 
 #[derive(Eq, PartialEq, Debug)]
-enum ReferenceSet {
+pub(crate) enum ReferenceSet {
     AlphaNumeric(HashSet<String>),
     AlphaNumericIgnoreCase(HashSet<String>),
     Numeric(HashSet<i64>),
@@ -32,18 +27,7 @@ impl FromStr for ReferenceSet {
     }
 }
 
-#[derive(Debug)]
-struct QRadarMock {
-    reference_sets: HashMap<String, ReferenceSet>,
-}
-
 impl QRadarMock {
-    pub(crate) fn new() -> Self {
-        QRadarMock {
-            reference_sets: HashMap::new(),
-        }
-    }
-
     pub(crate) fn add_reference_set(
         &mut self,
         name: String,
