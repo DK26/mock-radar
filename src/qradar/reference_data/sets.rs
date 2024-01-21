@@ -3,7 +3,7 @@ use std::{collections::HashSet, net::IpAddr, str::FromStr};
 use crate::permissions;
 use crate::qradar::qradar_mock::QRadarMock;
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub(crate) enum ReferenceSet {
     AlphaNumeric(HashSet<String>),
     AlphaNumericIgnoreCase(HashSet<String>),
@@ -30,35 +30,50 @@ impl FromStr for ReferenceSet {
 impl QRadarMock {
     pub(crate) fn add_reference_set(
         &mut self,
+        authorization_token: permissions::AuthorizationToken,
         name: String,
         reference_set: ReferenceSet,
-    ) -> anyhow::Result<()> {
-        todo!()
+    ) -> Option<ReferenceSet> {
+        self.write_reference_sets(authorization_token)
+            .insert(name, reference_set)
     }
 
-    pub(crate) fn get_reference_set(&mut self, name: String) -> anyhow::Result<()> {
-        todo!()
+    pub(crate) fn get_reference_set(
+        &self,
+        authorization_token: permissions::AuthorizationToken,
+        name: &str,
+    ) -> Option<&ReferenceSet> {
+        self.readonly_reference_sets(authorization_token).get(name)
     }
 
-    pub(crate) fn delete_reference_set(&mut self, name: String) -> anyhow::Result<()> {
-        todo!()
+    pub(crate) fn delete_reference_set(
+        &mut self,
+        authorization_token: permissions::AuthorizationToken,
+        name: &str,
+    ) -> Option<ReferenceSet> {
+        self.write_reference_sets(authorization_token).remove(name)
     }
 
     pub(crate) fn insert_to_reference_set(
         &mut self,
-        _: permissions::AuthorizationToken,
+        authorization_token: permissions::AuthorizationToken,
         name: String,
         value: &str,
     ) -> anyhow::Result<()> {
         todo!("attempt to parse the provided string value into the the retrieved ReferenceSet type and append")
     }
 
-    pub(crate) fn remove_from_reference_set(&mut self, name: &str) -> anyhow::Result<()> {
+    pub(crate) fn remove_from_reference_set(
+        &mut self,
+        authorization_token: permissions::AuthorizationToken,
+        name: &str,
+    ) -> anyhow::Result<()> {
         todo!()
     }
 
     pub(crate) fn delete_from_reference_set(
         &mut self,
+        authorization_token: permissions::AuthorizationToken,
         name: &str,
         value: &str,
     ) -> anyhow::Result<()> {
