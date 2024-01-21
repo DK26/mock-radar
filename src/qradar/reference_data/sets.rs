@@ -1,7 +1,7 @@
 use std::{collections::HashSet, net::IpAddr, str::FromStr};
 
 use crate::permissions;
-use crate::qradar::QRadarMock;
+use crate::qradar::qradar_mock::QRadarMock;
 
 #[derive(Eq, PartialEq, Debug)]
 pub(crate) enum ReferenceSet {

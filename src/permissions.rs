@@ -1,4 +1,7 @@
-use crate::{REGISTERED_BASIC, REGISTERED_TOKEN};
+pub(crate) const REGISTERED_TOKEN: &str = "d6391576-55d3-4c44-85d8-5665b0d2336f";
+pub(crate) const REGISTERED_USERNAME: &str = "admin";
+pub(crate) const REGISTERED_PASSWORD: &str = "pass";
+pub(crate) const REGISTERED_BASIC: &str = "YWRtaW46cGFzcw==";
 
 struct InitializePreventer;
 
