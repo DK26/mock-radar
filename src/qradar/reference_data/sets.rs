@@ -1,7 +1,23 @@
+use std::num::ParseIntError;
 use std::{collections::HashSet, net::IpAddr, str::FromStr};
 
 use crate::permissions;
 use crate::qradar::qradar_mock::QRadarMock;
+
+#[derive(thiserror::Error, Debug)]
+pub(crate) enum ReferenceSetError {
+    #[error("type mismatch: {0}")]
+    TypeMismatch(String),
+
+    #[error("entry doesn't exists")]
+    EntryDoesNotExists,
+
+    #[error("provided unsupported type {0:?}")]
+    UnsupportedType(String),
+
+    #[error(transparent)]
+    System(#[from] anyhow::Error),
+}
 
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub(crate) enum ReferenceSet {
@@ -13,7 +29,7 @@ pub(crate) enum ReferenceSet {
 }
 
 impl FromStr for ReferenceSet {
-    type Err = anyhow::Error;
+    type Err = ReferenceSetError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -22,7 +38,7 @@ impl FromStr for ReferenceSet {
             "IP" => Ok(ReferenceSet::Ip(HashSet::new())),
             "PORT" => Ok(ReferenceSet::Port(HashSet::new())),
             "ALNIC" => Ok(ReferenceSet::AlphaNumericIgnoreCase(HashSet::new())),
-            _ => Err(anyhow::anyhow!("unable to parse reference set type")),
+            unknown_type => Err(ReferenceSetError::UnsupportedType(unknown_type.into())),
         }
     }
 }
@@ -59,8 +75,35 @@ impl QRadarMock {
         authorization_token: permissions::AuthorizationToken,
         name: String,
         value: &str,
-    ) -> anyhow::Result<()> {
-        todo!("attempt to parse the provided string value into the the retrieved ReferenceSet type and append")
+    ) -> anyhow::Result<bool, ReferenceSetError> {
+        let maybe_write_reference_set = self
+            .write_reference_sets(authorization_token)
+            .get_mut(&name);
+
+        match maybe_write_reference_set {
+            Some(reference_set) => match reference_set {
+                ReferenceSet::AlphaNumeric(set) => Ok(set.insert(value.to_string())),
+                ReferenceSet::AlphaNumericIgnoreCase(set) => {
+                    Ok(set.insert(value.to_lowercase().to_string()))
+                }
+                ReferenceSet::Numeric(set) => Ok(set.insert(
+                    value
+                        .parse()
+                        .map_err(|e| ReferenceSetError::TypeMismatch(format!("{e:#?}")))?,
+                )),
+                ReferenceSet::Port(set) => Ok(set.insert(
+                    value
+                        .parse()
+                        .map_err(|e| ReferenceSetError::TypeMismatch(format!("{e:#?}")))?,
+                )),
+                ReferenceSet::Ip(set) => Ok(set.insert(
+                    value
+                        .parse()
+                        .map_err(|e| ReferenceSetError::TypeMismatch(format!("{e:#?}")))?,
+                )),
+            },
+            None => Err(ReferenceSetError::EntryDoesNotExists),
+        }
     }
 
     pub(crate) fn remove_from_reference_set(

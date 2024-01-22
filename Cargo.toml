@@ -17,4 +17,5 @@ tracing-subscriber = { version = "0.3", features = [
 tokio = { version = "1", features = [
     "full",
 ] } # Async runtime; 'full' includes all essential features
-anyhow = "*"
+anyhow = "1.0.79"
+thiserror = "1.0.56"
