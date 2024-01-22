@@ -73,12 +73,11 @@ impl QRadarMock {
     pub(crate) fn insert_to_reference_set(
         &mut self,
         authorization_token: permissions::AuthorizationToken,
-        name: String,
+        name: &str,
         value: &str,
     ) -> anyhow::Result<bool, ReferenceSetError> {
-        let maybe_write_reference_set = self
-            .write_reference_sets(authorization_token)
-            .get_mut(&name);
+        let maybe_write_reference_set =
+            self.write_reference_sets(authorization_token).get_mut(name);
 
         match maybe_write_reference_set {
             Some(reference_set) => match reference_set {
@@ -104,14 +103,6 @@ impl QRadarMock {
             },
             None => Err(ReferenceSetError::EntryDoesNotExists),
         }
-    }
-
-    pub(crate) fn remove_from_reference_set(
-        &mut self,
-        authorization_token: permissions::AuthorizationToken,
-        name: &str,
-    ) -> anyhow::Result<()> {
-        todo!()
     }
 
     pub(crate) fn delete_from_reference_set(
