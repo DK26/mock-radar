@@ -93,7 +93,7 @@ impl QRadarMock {
         authorization_token: permissions::AuthorizationToken,
         name: &str,
         value: &str,
-    ) -> anyhow::Result<bool, ReferenceSetError> {
+    ) -> Result<bool, ReferenceSetError> {
         let maybe_write_reference_set =
             self.write_reference_sets(authorization_token).get_mut(name);
 
