@@ -166,7 +166,7 @@ mod tests {
 
     #[test]
     fn add_reference_set_double_insert_failure() {
-        let reference_set_name = TEST_REFERENCE_SET_NAME.to_string();
+        let test_reference_set_name = TEST_REFERENCE_SET_NAME.to_string();
 
         let mut mock = QRadarMock::new();
 
@@ -176,7 +176,7 @@ mod tests {
 
         let add_result = mock.add_reference_set(
             authorization_token,
-            reference_set_name.clone(),
+            test_reference_set_name.clone(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
 
@@ -188,13 +188,13 @@ mod tests {
 
         let add_result = mock.add_reference_set(
             authorization_token,
-            reference_set_name.clone(),
+            test_reference_set_name.clone(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
 
         assert!(matches!(
             add_result,
-            Err(ReferenceSetError::EntryAlreadyExists(value)) if value == reference_set_name
+            Err(ReferenceSetError::EntryAlreadyExists(reference_set_name)) if reference_set_name == test_reference_set_name
         ));
     }
 
@@ -260,7 +260,7 @@ mod tests {
         let delete_result = mock.delete_reference_set(authorization_token, TEST_REFERENCE_SET_NAME);
 
         assert!(
-            matches!(delete_result, Err(ReferenceSetError::EntryDoesNotExists(value)) if value == TEST_REFERENCE_SET_NAME)
+            matches!(delete_result, Err(ReferenceSetError::EntryDoesNotExists(reference_set_name)) if reference_set_name == TEST_REFERENCE_SET_NAME)
         );
     }
 }
