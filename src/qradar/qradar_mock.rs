@@ -15,14 +15,14 @@ impl QRadarMock {
         }
     }
 
-    pub(crate) fn readonly_reference_sets(
+    pub(crate) fn reference_sets_readonly_access(
         &self,
         _: permissions::AuthorizationToken,
     ) -> &HashMap<String, ReferenceSet> {
         &self.reference_sets
     }
 
-    pub(crate) fn write_reference_sets(
+    pub(crate) fn reference_sets_write_access(
         &mut self,
         _: permissions::AuthorizationToken,
     ) -> &mut HashMap<String, ReferenceSet> {

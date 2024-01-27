@@ -12,11 +12,11 @@ pub(crate) enum ReferenceSetError {
     #[error("type mismatch: {0}")]
     TypeMismatch(String),
 
-    #[error("entry {0:?} doesn't exists")]
-    EntryDoesNotExists(String),
+    #[error("reference set {0:?} doesn't exists")]
+    ReferenceSetDoesNotExists(String),
 
-    #[error("entry {0:?} already exists")]
-    EntryAlreadyExists(String),
+    #[error("reference set {0:?} already exists")]
+    ReferenceSetAlreadyExists(String),
 
     #[error("provided unsupported type {0:?}")]
     UnsupportedType(String),
@@ -56,10 +56,12 @@ impl QRadarMock {
         name: String,
         reference_set: ReferenceSet,
     ) -> Result<(), ReferenceSetError> {
-        let entry = self.write_reference_sets(authorization_token).entry(name);
+        let entry = self
+            .reference_sets_write_access(authorization_token)
+            .entry(name);
 
         match entry {
-            Occupied(value) => Err(ReferenceSetError::EntryAlreadyExists(
+            Occupied(value) => Err(ReferenceSetError::ReferenceSetAlreadyExists(
                 value.key().to_owned(),
             )),
             Vacant(value) => {
@@ -74,7 +76,8 @@ impl QRadarMock {
         authorization_token: permissions::AuthorizationToken,
         name: &str,
     ) -> Option<&ReferenceSet> {
-        self.readonly_reference_sets(authorization_token).get(name)
+        self.reference_sets_readonly_access(authorization_token)
+            .get(name)
     }
 
     pub(crate) fn delete_reference_set(
@@ -82,10 +85,10 @@ impl QRadarMock {
         authorization_token: permissions::AuthorizationToken,
         name: &str,
     ) -> Result<(), ReferenceSetError> {
-        self.write_reference_sets(authorization_token)
+        self.reference_sets_write_access(authorization_token)
             .remove(name)
             .map(|_| ())
-            .ok_or_else(|| ReferenceSetError::EntryDoesNotExists(name.to_string()))
+            .ok_or_else(|| ReferenceSetError::ReferenceSetDoesNotExists(name.to_string()))
     }
 
     pub(crate) fn insert_to_reference_set(
@@ -94,8 +97,9 @@ impl QRadarMock {
         name: &str,
         value: &str,
     ) -> Result<bool, ReferenceSetError> {
-        let maybe_write_reference_set =
-            self.write_reference_sets(authorization_token).get_mut(name);
+        let maybe_write_reference_set = self
+            .reference_sets_write_access(authorization_token)
+            .get_mut(name);
 
         match maybe_write_reference_set {
             Some(reference_set) => match reference_set {
@@ -119,7 +123,9 @@ impl QRadarMock {
                         .map_err(|e| ReferenceSetError::TypeMismatch(format!("{e:#?}")))?,
                 )),
             },
-            None => Err(ReferenceSetError::EntryDoesNotExists(name.to_string())),
+            None => Err(ReferenceSetError::ReferenceSetDoesNotExists(
+                name.to_string(),
+            )),
         }
     }
 
@@ -194,7 +200,7 @@ mod tests {
 
         assert!(matches!(
             add_result,
-            Err(ReferenceSetError::EntryAlreadyExists(reference_set_name)) if reference_set_name == test_reference_set_name
+            Err(ReferenceSetError::ReferenceSetAlreadyExists(reference_set_name)) if reference_set_name == test_reference_set_name
         ));
     }
 
@@ -260,7 +266,55 @@ mod tests {
         let delete_result = mock.delete_reference_set(authorization_token, TEST_REFERENCE_SET_NAME);
 
         assert!(
-            matches!(delete_result, Err(ReferenceSetError::EntryDoesNotExists(reference_set_name)) if reference_set_name == TEST_REFERENCE_SET_NAME)
+            matches!(delete_result, Err(ReferenceSetError::ReferenceSetDoesNotExists(reference_set_name)) if reference_set_name == TEST_REFERENCE_SET_NAME)
+        );
+    }
+
+    #[test]
+    fn insert_to_reference_set_success() {
+        let mut mock = QRadarMock::new();
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let add_result = mock.add_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME.to_string(),
+            ReferenceSet::AlphaNumeric(HashSet::new()),
+        );
+
+        assert!(add_result.is_ok());
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let result = mock.insert_to_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME,
+            "test value",
+        );
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn insert_to_reference_set_missing_set_failure() {
+        let mut mock = QRadarMock::new();
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let result = mock.insert_to_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME,
+            "test value",
+        );
+
+        assert!(
+            matches!(result, Err(ReferenceSetError::ReferenceSetDoesNotExists(reference_set_name)) if reference_set_name == TEST_REFERENCE_SET_NAME)
         );
     }
 }
