@@ -107,21 +107,15 @@ impl QRadarMock {
                 ReferenceSet::AlphaNumericIgnoreCase(set) => {
                     Ok(set.insert(value.to_lowercase().to_string()))
                 }
-                ReferenceSet::Numeric(set) => Ok(set.insert(
-                    value
-                        .parse()
-                        .map_err(|e| ReferenceSetError::TypeMismatch(format!("{e:#?}")))?,
-                )),
-                ReferenceSet::Port(set) => Ok(set.insert(
-                    value
-                        .parse()
-                        .map_err(|e| ReferenceSetError::TypeMismatch(format!("{e:#?}")))?,
-                )),
-                ReferenceSet::Ip(set) => Ok(set.insert(
-                    value
-                        .parse()
-                        .map_err(|e| ReferenceSetError::TypeMismatch(format!("{e:#?}")))?,
-                )),
+                ReferenceSet::Numeric(set) => Ok(set.insert(value.parse().map_err(|_| {
+                    ReferenceSetError::TypeMismatch(format!("{value:?} is not a number"))
+                })?)),
+                ReferenceSet::Port(set) => Ok(set.insert(value.parse().map_err(|_| {
+                    ReferenceSetError::TypeMismatch(format!("{value:?} is not a port number"))
+                })?)),
+                ReferenceSet::Ip(set) => Ok(set.insert(value.parse().map_err(|_| {
+                    ReferenceSetError::TypeMismatch(format!("{value:?} is not an IP address"))
+                })?)),
             },
             None => Err(ReferenceSetError::ReferenceSetDoesNotExists(
                 name.to_string(),
@@ -315,6 +309,38 @@ mod tests {
 
         assert!(
             matches!(result, Err(ReferenceSetError::ReferenceSetDoesNotExists(reference_set_name)) if reference_set_name == TEST_REFERENCE_SET_NAME)
+        );
+    }
+
+    #[test]
+    fn insert_to_reference_set_wrong_type_failure() {
+        let mut mock = QRadarMock::new();
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let add_result = mock.add_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME.to_string(),
+            ReferenceSet::Numeric(HashSet::new()),
+        );
+
+        assert!(add_result.is_ok());
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let test_value = "test_value";
+
+        let result =
+            mock.insert_to_reference_set(authorization_token, TEST_REFERENCE_SET_NAME, test_value);
+
+        println!("{result:#?}");
+
+        assert!(
+            matches!(result, Err(ReferenceSetError::TypeMismatch(error_message)) if error_message == format!("{test_value:?} is not a number"))
         );
     }
 }
