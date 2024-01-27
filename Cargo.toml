@@ -26,4 +26,4 @@ strip = true       # Reduces binary size
 codegen-units = 1  # Improves optimization
 lto = true         # Improves optimization
 incremental = true # Improves compile-time speed
-opt-level = 3      # Optimizes binary execution-times
+opt-level = "z"    # Optimizes binary size
