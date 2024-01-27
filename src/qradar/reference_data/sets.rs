@@ -18,11 +18,11 @@ pub(crate) enum ReferenceSetError {
     #[error("reference set {0:?} already exists")]
     ReferenceSetAlreadyExists(String),
 
+    #[error("entry {0:?} was not found")]
+    EntryNotFound(String),
+
     #[error("provided unsupported type {0:?}")]
     UnsupportedType(String),
-
-    #[error(transparent)]
-    System(#[from] anyhow::Error),
 }
 
 #[derive(Eq, PartialEq, Debug, Clone)]
@@ -97,29 +97,43 @@ impl QRadarMock {
         name: &str,
         value: &str,
     ) -> Result<bool, ReferenceSetError> {
-        let maybe_write_reference_set = self
+        let maybe_reference_set_write_access = self
             .reference_sets_write_access(authorization_token)
             .get_mut(name);
 
-        match maybe_write_reference_set {
-            Some(reference_set) => match reference_set {
-                ReferenceSet::AlphaNumeric(set) => Ok(set.insert(value.to_string())),
-                ReferenceSet::AlphaNumericIgnoreCase(set) => {
-                    Ok(set.insert(value.to_lowercase().to_string()))
+        match maybe_reference_set_write_access {
+            Some(reference_set_type) => match reference_set_type {
+                ReferenceSet::AlphaNumeric(reference_set) => {
+                    Ok(reference_set.insert(value.to_string()))
                 }
-                ReferenceSet::Numeric(set) => Ok(set.insert(value.parse().map_err(|_| {
-                    ReferenceSetError::TypeMismatch(format!("{name}: {value:?} is not a number"))
-                })?)),
-                ReferenceSet::Port(set) => Ok(set.insert(value.parse().map_err(|_| {
-                    ReferenceSetError::TypeMismatch(format!(
-                        "{name}: {value:?} is not a port number"
-                    ))
-                })?)),
-                ReferenceSet::Ip(set) => Ok(set.insert(value.parse().map_err(|_| {
-                    ReferenceSetError::TypeMismatch(format!(
-                        "{name}: {value:?} is not an IP address"
-                    ))
-                })?)),
+
+                ReferenceSet::AlphaNumericIgnoreCase(reference_set) => {
+                    Ok(reference_set.insert(value.to_lowercase().to_string()))
+                }
+
+                ReferenceSet::Numeric(reference_set) => {
+                    Ok(reference_set.insert(value.parse().map_err(|_| {
+                        ReferenceSetError::TypeMismatch(format!(
+                            "{name}: {value:?} is not a number"
+                        ))
+                    })?))
+                }
+
+                ReferenceSet::Port(reference_set) => {
+                    Ok(reference_set.insert(value.parse().map_err(|_| {
+                        ReferenceSetError::TypeMismatch(format!(
+                            "{name}: {value:?} is not a port number"
+                        ))
+                    })?))
+                }
+
+                ReferenceSet::Ip(reference_set) => {
+                    Ok(reference_set.insert(value.parse().map_err(|_| {
+                        ReferenceSetError::TypeMismatch(format!(
+                            "{name}: {value:?} is not an IP address"
+                        ))
+                    })?))
+                }
             },
             None => Err(ReferenceSetError::ReferenceSetDoesNotExists(
                 name.to_string(),
@@ -132,8 +146,54 @@ impl QRadarMock {
         authorization_token: permissions::AuthorizationToken,
         name: &str,
         value: &str,
-    ) -> anyhow::Result<()> {
-        todo!()
+    ) -> Result<(), ReferenceSetError> {
+        let maybe_reference_set_write_access = self
+            .reference_sets_write_access(authorization_token)
+            .get_mut(name);
+
+        match maybe_reference_set_write_access {
+            Some(reference_set_type) => match reference_set_type {
+                ReferenceSet::AlphaNumeric(reference_set) => reference_set
+                    .remove(value)
+                    .then_some(())
+                    .ok_or_else(|| ReferenceSetError::EntryNotFound(value.to_string())),
+
+                ReferenceSet::AlphaNumericIgnoreCase(reference_set) => reference_set
+                    .remove(value.to_lowercase().as_str())
+                    .then_some(())
+                    .ok_or_else(|| ReferenceSetError::EntryNotFound(value.to_string())),
+
+                ReferenceSet::Numeric(reference_set) => reference_set
+                    .remove(&value.parse().map_err(|_| {
+                        ReferenceSetError::TypeMismatch(format!(
+                            "{name}: {value:?} is not a number"
+                        ))
+                    })?)
+                    .then_some(())
+                    .ok_or_else(|| ReferenceSetError::EntryNotFound(value.to_string())),
+
+                ReferenceSet::Port(reference_set) => reference_set
+                    .remove(&value.parse().map_err(|_| {
+                        ReferenceSetError::TypeMismatch(format!(
+                            "{name}: {value:?} is not a port number"
+                        ))
+                    })?)
+                    .then_some(())
+                    .ok_or_else(|| ReferenceSetError::EntryNotFound(value.to_string())),
+
+                ReferenceSet::Ip(reference_set) => reference_set
+                    .remove(&value.parse().map_err(|_| {
+                        ReferenceSetError::TypeMismatch(format!(
+                            "{name}: {value:?} is not an IP address"
+                        ))
+                    })?)
+                    .then_some(())
+                    .ok_or_else(|| ReferenceSetError::EntryNotFound(value.to_string())),
+            },
+            None => Err(ReferenceSetError::ReferenceSetDoesNotExists(
+                name.to_string(),
+            )),
+        }
     }
 }
 
@@ -345,5 +405,132 @@ mod tests {
         assert!(
             matches!(result, Err(ReferenceSetError::TypeMismatch(error_message)) if error_message == format!("{TEST_REFERENCE_SET_NAME}: {test_value:?} is not a number"))
         );
+    }
+
+    #[test]
+    fn delete_from_reference_set_success() {
+        let test_value = "test value";
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let mut mock = QRadarMock::new();
+
+        let add_result = mock.add_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME.to_string(),
+            ReferenceSet::AlphaNumeric(HashSet::new()),
+        );
+
+        assert!(add_result.is_ok());
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let result =
+            mock.insert_to_reference_set(authorization_token, TEST_REFERENCE_SET_NAME, test_value);
+
+        assert!(result.is_ok());
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let delete_result = mock.delete_from_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME,
+            test_value,
+        );
+
+        assert!(delete_result.is_ok());
+    }
+
+    #[test]
+    fn delete_from_reference_set_entry_does_not_exist_failure() {
+        let test_value = "test value";
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let mut mock = QRadarMock::new();
+
+        let add_result = mock.add_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME.to_string(),
+            ReferenceSet::AlphaNumeric(HashSet::new()),
+        );
+
+        assert!(add_result.is_ok());
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let delete_result = mock.delete_from_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME,
+            test_value,
+        );
+
+        assert!(
+            matches!(delete_result, Err(ReferenceSetError::EntryNotFound(entry)) if entry == test_value)
+        );
+    }
+
+    #[test]
+    fn delete_from_reference_set_that_does_not_exist_failure() {
+        let test_value = "test value";
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let mut mock = QRadarMock::new();
+
+        let delete_result = mock.delete_from_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME,
+            test_value,
+        );
+
+        assert!(
+            matches!(delete_result, Err(ReferenceSetError::ReferenceSetDoesNotExists(reference_set)) if reference_set == TEST_REFERENCE_SET_NAME)
+        );
+    }
+
+    #[test]
+    fn delete_from_reference_set_wrong_type_failure() {
+        let test_value = "test value";
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let mut mock = QRadarMock::new();
+
+        let add_result = mock.add_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME.to_string(),
+            ReferenceSet::Numeric(HashSet::new()),
+        );
+
+        assert!(add_result.is_ok());
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let delete_result = mock.delete_from_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME,
+            test_value,
+        );
+
+        assert!(
+            matches!(delete_result, Err(ReferenceSetError::TypeMismatch(error_message)) if error_message == format!("{TEST_REFERENCE_SET_NAME}: {test_value:?} is not a number"))
+        )
     }
 }
