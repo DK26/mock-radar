@@ -108,13 +108,17 @@ impl QRadarMock {
                     Ok(set.insert(value.to_lowercase().to_string()))
                 }
                 ReferenceSet::Numeric(set) => Ok(set.insert(value.parse().map_err(|_| {
-                    ReferenceSetError::TypeMismatch(format!("{value:?} is not a number"))
+                    ReferenceSetError::TypeMismatch(format!("{name}: {value:?} is not a number"))
                 })?)),
                 ReferenceSet::Port(set) => Ok(set.insert(value.parse().map_err(|_| {
-                    ReferenceSetError::TypeMismatch(format!("{value:?} is not a port number"))
+                    ReferenceSetError::TypeMismatch(format!(
+                        "{name}: {value:?} is not a port number"
+                    ))
                 })?)),
                 ReferenceSet::Ip(set) => Ok(set.insert(value.parse().map_err(|_| {
-                    ReferenceSetError::TypeMismatch(format!("{value:?} is not an IP address"))
+                    ReferenceSetError::TypeMismatch(format!(
+                        "{name}: {value:?} is not an IP address"
+                    ))
                 })?)),
             },
             None => Err(ReferenceSetError::ReferenceSetDoesNotExists(
@@ -336,7 +340,7 @@ mod tests {
             mock.insert_to_reference_set(authorization_token, TEST_REFERENCE_SET_NAME, test_value);
 
         assert!(
-            matches!(result, Err(ReferenceSetError::TypeMismatch(error_message)) if error_message == format!("{test_value:?} is not a number"))
+            matches!(result, Err(ReferenceSetError::TypeMismatch(error_message)) if error_message == format!("{TEST_REFERENCE_SET_NAME}: {test_value:?} is not a number"))
         );
     }
 }
