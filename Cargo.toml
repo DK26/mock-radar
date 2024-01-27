@@ -19,3 +19,11 @@ tokio = { version = "1", features = [
 ] } # Async runtime; 'full' includes all essential features
 anyhow = "1.0.79"
 thiserror = "1.0.56"
+
+[profile.release]
+panic = 'abort'    # Reduces binary size
+strip = true       # Reduces binary size
+codegen-units = 1  # Improves optimization
+lto = true         # Improves optimization
+incremental = true # Improves compile-time speed
+opt-level = 3      # Optimizes binary execution-times
