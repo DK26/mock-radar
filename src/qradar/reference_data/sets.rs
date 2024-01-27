@@ -266,6 +266,8 @@ mod tests {
 
     #[test]
     fn insert_to_reference_set_success() {
+        let test_value = "test value";
+
         let mut mock = QRadarMock::new();
 
         let authorization_token =
@@ -284,28 +286,24 @@ mod tests {
             AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
                 .expect("failed authentication");
 
-        let result = mock.insert_to_reference_set(
-            authorization_token,
-            TEST_REFERENCE_SET_NAME,
-            "test value",
-        );
+        let result =
+            mock.insert_to_reference_set(authorization_token, TEST_REFERENCE_SET_NAME, test_value);
 
         assert!(result.is_ok());
     }
 
     #[test]
     fn insert_to_reference_set_missing_set_failure() {
+        let test_value = "test value";
+
         let mut mock = QRadarMock::new();
 
         let authorization_token =
             AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
                 .expect("failed authentication");
 
-        let result = mock.insert_to_reference_set(
-            authorization_token,
-            TEST_REFERENCE_SET_NAME,
-            "test value",
-        );
+        let result =
+            mock.insert_to_reference_set(authorization_token, TEST_REFERENCE_SET_NAME, test_value);
 
         assert!(
             matches!(result, Err(ReferenceSetError::ReferenceSetDoesNotExists(reference_set_name)) if reference_set_name == TEST_REFERENCE_SET_NAME)
@@ -314,6 +312,8 @@ mod tests {
 
     #[test]
     fn insert_to_reference_set_wrong_type_failure() {
+        let test_value = "test value";
+
         let mut mock = QRadarMock::new();
 
         let authorization_token =
@@ -332,12 +332,8 @@ mod tests {
             AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
                 .expect("failed authentication");
 
-        let test_value = "test_value";
-
         let result =
             mock.insert_to_reference_set(authorization_token, TEST_REFERENCE_SET_NAME, test_value);
-
-        println!("{result:#?}");
 
         assert!(
             matches!(result, Err(ReferenceSetError::TypeMismatch(error_message)) if error_message == format!("{test_value:?} is not a number"))
