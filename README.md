@@ -4,9 +4,9 @@ A highly minimalist mock server that replicates QRadar API behavior, as an aid f
 
 ## Why not simply mock locally?
 
-You can do this. You'll have to mimic on your own the API behavior and the duplicate code whenever is required. Nothing wrong with that,
+You can do this. You'll have to mimic on your own the API behavior and duplicate code whenever is required. Nothing wrong with that,
 
-However, what I am trying to achieve with this project is most accurate replica, which would require a community help, and do not wish to rewrite it over and over again as I may have multiple projects requiring the same mock logic.
+However, what I am trying to achieve with this project is having the most accurate replica, which would require a community help, and do not wish to rewrite it over and over again as I may have multiple projects requiring the same mock logic.
 
 I though I'd share my own work in case others find it useful. Who knows, maybe even collaborate and add their own mocked endpoints. This could be the start of something.
 
