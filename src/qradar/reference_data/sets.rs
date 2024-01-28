@@ -533,4 +533,47 @@ mod tests {
             matches!(delete_result, Err(ReferenceSetError::TypeMismatch(error_message)) if error_message == format!("{TEST_REFERENCE_SET_NAME}: {test_value:?} is not a number"))
         )
     }
+
+    #[test]
+    fn insert_to_reference_set_case_insensitive_and_get_value() {
+        let insert_value = "Test VaLUE";
+        let validate_value = "test value";
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let mut mock = QRadarMock::new();
+
+        let add_result = mock.add_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME.to_string(),
+            ReferenceSet::AlphaNumericIgnoreCase(HashSet::new()),
+        );
+
+        assert!(add_result.is_ok());
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let insert_result = mock.insert_to_reference_set(
+            authorization_token,
+            TEST_REFERENCE_SET_NAME,
+            insert_value,
+        );
+
+        assert!(insert_result.is_ok());
+
+        let authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()))
+                .expect("failed authentication");
+
+        let maybe_reference_set_readonly_access =
+            mock.get_reference_set(authorization_token, TEST_REFERENCE_SET_NAME);
+
+        assert!(
+            matches!(maybe_reference_set_readonly_access, Some(ReferenceSet::AlphaNumericIgnoreCase(reference_set)) if reference_set.contains(validate_value))
+        )
+    }
 }
