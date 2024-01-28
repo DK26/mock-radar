@@ -3,7 +3,9 @@ pub(crate) const REGISTERED_USERNAME: &str = "admin";
 pub(crate) const REGISTERED_PASSWORD: &str = "pass";
 pub(crate) const REGISTERED_BASIC: &str = "YWRtaW46cGFzcw==";
 
-struct InitializePreventer;
+/// Simply prevents direct initialization of the stateless `AuthorizationToken` type
+#[allow(dead_code)]
+struct InitializationBlocker;
 
 pub(crate) enum Authentication {
     Token(String),
@@ -11,17 +13,18 @@ pub(crate) enum Authentication {
 }
 
 pub(crate) struct AuthorizationToken {
-    preventer: InitializePreventer,
+    #[allow(dead_code)]
+    _blocker: InitializationBlocker,
 }
 
 impl AuthorizationToken {
     pub(crate) fn validate(authentication: Authentication) -> Option<Self> {
         match authentication {
             Authentication::Token(token) => (token.as_str() == REGISTERED_TOKEN).then_some(Self {
-                preventer: InitializePreventer,
+                _blocker: InitializationBlocker,
             }),
             Authentication::Basic(token) => (token.as_str() == REGISTERED_BASIC).then_some(Self {
-                preventer: InitializePreventer,
+                _blocker: InitializationBlocker,
             }),
         }
     }
