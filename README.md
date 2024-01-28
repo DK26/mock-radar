@@ -1,34 +1,43 @@
 # mock-radar
 
-A highly minimalist server that mocks QRadar API behavior, to ease on developing integrations and avoid managing a full QRadar environment.
+A highly minimalist mock server that replicates QRadar API behavior, as an aid for developing and integrating apps while avoiding the entire setup and management of a QRadar environment.
 
 ## Why not simply mock locally?
 
-You can do this. You'll have to mimic on your own the API behavior and duplicate code whenever is required.
+You can do this. You'll have to mimic on your own the API behavior and the duplicate code whenever is required. Nothing wrong with that,
 
-But, what I am trying to achieve is an accurate replica and do not wish to repeat myself as I can have many projects using the same mock.
+However, what I am trying to achieve with this project is most accurate replica, which would require a community help, and do not wish to rewrite it over and over again as I may have multiple projects requiring the same mock logic.
 
-I though I'd share my own work in case others find it useful. Who knows, maybe even collaborate and add their own mocked endpoints. This could be the start of something big. or not.
+I though I'd share my own work in case others find it useful. Who knows, maybe even collaborate and add their own mocked endpoints. This could be the start of something.
 
 ## Why write the mock server in Rust?
 
-1. Small, low-profile, independent executable that doesn't require third party installations such as a Python, Java or .Net runtime. Can be compiled to any platform supported by LLVM (clang). You can use your old laptop.
+1. Small, low-profile, independent executable that doesn't require third party dependencies or environments, such as Python, Java(JDK) or .Net runtime installations. It can simply be compiled to any platform supported by LLVM (clang). You can even run it on your old laptop.
 
-2. Powerful type system with high code reliability, excellent for potentially big projects
+2. Very powerful and reliable type system for coding correctly which is also excellent for potentially big projects
 
 3. Excellent standard toolchain for running, managing and testing projects
 
-4. Growing community
+4. Having a growing community
 
 ## Contribution, Collaboration & Licensing
 
 ### Community
 
-You don't have to be a software developer! Feel free to [share your input in the discussions section](https://github.com/DK26/mock-radar/discussions/) on about anything.
+You don't have to be a software developer! Feel free to [share your input in the discussions section](https://github.com/DK26/mock-radar/discussions/) and talk about anything.
 
-From typo fixes, to sharing ideas, suggestions, issues, experiences, code and PRs.
+Contribution could be anything from typo fixes, to sharing ideas, suggestions, issues, experiences, and PRs
 
 ### MIT License
 
-Everything here is licensed under MIT because I really do not see anything special here. It's simply a mock of the real thing.
-If you wish to open an issues, share ideas, request features or send your own PR, feel free. We'll discuss about it as we go.
+Everything here is licensed under MIT license since it's simply a mock that mimics API, and shouldn't be something more than a community effort
+
+### Contribution Licensing
+
+You agree that any contribution is licensed under the MIT license
+
+### Disclaimer
+
+This project has nothing to do with the IBM(R) company or the QRadar (IBM's trademark) project and is simply an unofficial community effort. Use at your own risk under the restrictions of the MIT license
+
+- IBM Trademarks: [https://www.ibm.com/docs/en/zsms1/1.8.0?topic=notices-trademarks](https://www.ibm.com/docs/en/zsms1/1.8.0?topic=notices-trademarks)  
