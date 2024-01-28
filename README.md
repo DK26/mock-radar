@@ -2,7 +2,7 @@
 
 A highly minimalist mock server that replicates QRadar API behavior, as an aid for developing and integrating apps while avoiding the entire setup and management of a QRadar environment.
 
-## Why not simply mock locally?
+## Why not simply write my own mock for testing?
 
 You can do this. You'll have to mimic on your own the API behavior and duplicate code whenever is required. Nothing wrong with that,
 
