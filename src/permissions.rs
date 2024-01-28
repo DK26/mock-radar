@@ -28,4 +28,40 @@ impl AuthorizationToken {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use crate::permissions::REGISTERED_BASIC;
+
+    use super::{Authentication, AuthorizationToken, REGISTERED_TOKEN};
+
+    #[test]
+    fn token_authentication_success() {
+        let maybe_authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_TOKEN.to_string()));
+
+        assert!(maybe_authorization_token.is_some());
+    }
+
+    #[test]
+    fn token_authentication_failure() {
+        let maybe_authorization_token =
+            AuthorizationToken::validate(Authentication::Token(REGISTERED_BASIC.to_string()));
+
+        assert!(maybe_authorization_token.is_none());
+    }
+
+    #[test]
+    fn basic_authentication_success() {
+        let maybe_authorization_token =
+            AuthorizationToken::validate(Authentication::Basic(REGISTERED_BASIC.to_string()));
+
+        assert!(maybe_authorization_token.is_some());
+    }
+
+    #[test]
+    fn basic_authentication_failure() {
+        let maybe_authorization_token =
+            AuthorizationToken::validate(Authentication::Basic(REGISTERED_TOKEN.to_string()));
+
+        assert!(maybe_authorization_token.is_none());
+    }
+}
