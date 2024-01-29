@@ -1,2 +1,2 @@
-mod qradar_mock;
+pub mod qradar_mock;
 mod reference_data;

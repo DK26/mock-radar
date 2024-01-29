@@ -3,8 +3,8 @@ use crate::permissions;
 use super::reference_data::sets::ReferenceSet;
 use std::collections::HashMap;
 
-#[derive(Debug)]
-pub(crate) struct QRadarMock {
+#[derive(Debug, Default)]
+pub struct QRadarMock {
     reference_sets: HashMap<String, ReferenceSet>,
 }
 
