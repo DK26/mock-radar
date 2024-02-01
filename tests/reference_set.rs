@@ -12,7 +12,7 @@ use tower::ServiceExt; // for `call`, `oneshot`, and `ready`
 const ENDPOINT_URI: &str = "/api/reference_data/sets";
 
 #[tokio::test]
-pub(crate) async fn get_reference_set() {
+pub(crate) async fn get_reference_set_with_sec_token_success() {
     let shared_qradar_mock = SharedQRadarMock::default();
     let router = mock_radar::create_routes();
 
@@ -56,7 +56,7 @@ impl PartialEq for TestPostResponse {
 }
 
 #[tokio::test]
-pub(crate) async fn post_reference_set_with_token_success() {
+pub(crate) async fn post_reference_set_with_sec_token_success() {
     let shared_qradar_mock = SharedQRadarMock::default();
     let router = mock_radar::create_routes();
 
@@ -103,7 +103,7 @@ pub(crate) async fn post_reference_set_with_token_success() {
 }
 
 #[tokio::test]
-pub(crate) async fn post_reference_set_again_with_token_failure() {
+pub(crate) async fn post_reference_set_with_sec_token_conflict_failure() {
     let shared_qradar_mock = SharedQRadarMock::default();
     let router = mock_radar::create_routes();
 
