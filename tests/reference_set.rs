@@ -103,7 +103,7 @@ pub(crate) async fn post_reference_set_with_token_success() {
 }
 
 #[tokio::test]
-pub(crate) async fn post_reference_set_with_again_with_token_failure() {
+pub(crate) async fn post_reference_set_again_with_token_failure() {
     let shared_qradar_mock = SharedQRadarMock::default();
     let router = mock_radar::create_routes();
 
