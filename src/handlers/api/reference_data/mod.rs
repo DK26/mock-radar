@@ -6,7 +6,7 @@ pub(crate) mod sets;
 
 pub(crate) fn create_routes() -> Router<SharedQRadarMock> {
     Router::new().nest(
-        "/api/reference_data",
+        "/reference_data",
         Router::new()
             .route("/sets", axum::routing::get(sets::get_sets_handler))
             .route("/sets", axum::routing::post(sets::post_sets_handler)),

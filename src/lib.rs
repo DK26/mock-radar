@@ -5,9 +5,9 @@ mod qradar;
 use std::sync::{Arc, RwLock};
 
 use axum::Router;
+use handlers::api;
 
-use crate::handlers::general;
-use crate::handlers::reference_data;
+use crate::handlers::global;
 
 pub use permissions::REGISTERED_BASIC;
 pub use permissions::REGISTERED_PASSWORD;
@@ -20,6 +20,7 @@ pub type SharedQRadarMock = Arc<RwLock<QRadarMock>>;
 
 pub fn create_routes() -> Router<SharedQRadarMock> {
     Router::new()
-        .route("/", axum::routing::get(general::root))
-        .merge(reference_data::create_routes())
+        .route("/", axum::routing::get(global::root))
+        .merge(api::create_routes())
+        .fallback(global::multi_not_found_handler)
 }
