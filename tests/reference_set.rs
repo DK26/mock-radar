@@ -4,7 +4,7 @@ use axum::{
     body::Body,
     http::{self, Request, StatusCode},
 };
-use mock_radar::{SharedQRadarMock, REGISTERED_TOKEN};
+use mock_radar::{SharedQRadarMock, REGISTERED_SEC_TOKEN};
 use serde::Deserialize;
 use serde_json::json;
 use tower::ServiceExt; // for `call`, `oneshot`, and `ready`
@@ -75,7 +75,7 @@ pub(crate) async fn post_reference_set_with_sec_token_success() {
                 .header("Version", "12.0")
                 .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
                 .header(http::header::ACCEPT, mime::APPLICATION_JSON.as_ref())
-                .header("SEC", REGISTERED_TOKEN)
+                .header("SEC", REGISTERED_SEC_TOKEN)
                 .body(Body::empty())
                 .expect("could not build request"),
         )
@@ -123,7 +123,7 @@ pub(crate) async fn post_reference_set_with_sec_token_conflict_failure() {
                 .header("Version", "12.0")
                 .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
                 .header(http::header::ACCEPT, mime::APPLICATION_JSON.as_ref())
-                .header("SEC", REGISTERED_TOKEN)
+                .header("SEC", REGISTERED_SEC_TOKEN)
                 .body(Body::empty())
                 .expect("could not build request"),
         )
@@ -158,7 +158,7 @@ pub(crate) async fn post_reference_set_with_sec_token_conflict_failure() {
                 .header("Version", "12.0")
                 .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
                 .header(http::header::ACCEPT, mime::APPLICATION_JSON.as_ref())
-                .header("SEC", REGISTERED_TOKEN)
+                .header("SEC", REGISTERED_SEC_TOKEN)
                 .body(Body::empty())
                 .expect("could not build request"),
         )

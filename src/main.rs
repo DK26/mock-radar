@@ -1,8 +1,8 @@
 use anyhow::Context;
 
-use mock_radar::REGISTERED_BASIC;
+use mock_radar::REGISTERED_BASIC_TOKEN;
 use mock_radar::REGISTERED_PASSWORD;
-use mock_radar::REGISTERED_TOKEN;
+use mock_radar::REGISTERED_SEC_TOKEN;
 use mock_radar::REGISTERED_USERNAME;
 
 use tower_http::trace::TraceLayer; // Middleware for high-level logging of requests/responses
@@ -33,10 +33,10 @@ async fn main() -> anyhow::Result<()> {
 
     println!(
         r#"
-        TOKEN = {REGISTERED_TOKEN}
+        TOKEN = {REGISTERED_SEC_TOKEN}
         USERNAME = {REGISTERED_USERNAME}
         PASSWORD = {REGISTERED_PASSWORD}
-        BASIC = {REGISTERED_BASIC}
+        BASIC = {REGISTERED_BASIC_TOKEN}
     "#
     );
 

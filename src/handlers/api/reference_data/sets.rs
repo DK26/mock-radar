@@ -1,19 +1,24 @@
-use axum::{extract::State, http::HeaderMap};
+use axum::{
+    extract::State,
+    http::HeaderMap,
+    response::{Html, IntoResponse},
+};
 
-use crate::SharedQRadarMock;
+use crate::{extractors::Permissions, SharedQRadarMock};
 
 #[tracing::instrument(level = "debug", ret, skip(shared_qradar_mock))]
-pub(crate) async fn post_sets_handler(
+pub(crate) async fn post_handler(
     State(shared_qradar_mock): State<SharedQRadarMock>,
     headers: HeaderMap,
-) -> &'static str {
-    todo!()
+) -> impl IntoResponse {
+    Html("<h1>Es tut mir leid.. Work in progress</h1>")
 }
 
 #[tracing::instrument(level = "debug", ret, skip(shared_qradar_mock))]
-pub(crate) async fn get_sets_handler(
+pub(crate) async fn get_handler(
     State(shared_qradar_mock): State<SharedQRadarMock>,
+    Permissions(authorization_token): Permissions,
     headers: HeaderMap,
-) -> &'static str {
-    todo!()
+) -> impl IntoResponse {
+    Html("<h1>Es tut mir leid.. Work in progress</h1>")
 }

@@ -1,3 +1,4 @@
+mod extractors;
 mod handlers;
 mod permissions;
 mod qradar;
@@ -9,9 +10,9 @@ use handlers::api;
 
 use crate::handlers::global;
 
-pub use permissions::REGISTERED_BASIC;
+pub use permissions::REGISTERED_BASIC_TOKEN;
 pub use permissions::REGISTERED_PASSWORD;
-pub use permissions::REGISTERED_TOKEN;
+pub use permissions::REGISTERED_SEC_TOKEN;
 pub use permissions::REGISTERED_USERNAME;
 
 use crate::qradar::qradar_mock::QRadarMock;

@@ -6,19 +6,19 @@ use axum::response::Response;
 use axum::Json;
 use serde_json::json;
 
-use crate::permissions::REGISTERED_BASIC;
+use crate::permissions::REGISTERED_BASIC_TOKEN;
 use crate::permissions::REGISTERED_PASSWORD;
-use crate::permissions::REGISTERED_TOKEN;
+use crate::permissions::REGISTERED_SEC_TOKEN;
 use crate::permissions::REGISTERED_USERNAME;
 
 #[tracing::instrument(level = "debug", ret)]
 pub(crate) async fn root() -> String {
     format!(
         r#"
-        TOKEN = {REGISTERED_TOKEN}
+        TOKEN = {REGISTERED_SEC_TOKEN}
         USERNAME = {REGISTERED_USERNAME}
         PASSWORD = {REGISTERED_PASSWORD}
-        BASIC = {REGISTERED_BASIC}
+        BASIC = {REGISTERED_BASIC_TOKEN}
     "#
     )
 }
