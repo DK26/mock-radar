@@ -11,7 +11,9 @@ use handlers::api;
 use crate::handlers::global;
 
 pub use permissions::REGISTERED_BASIC_TOKEN;
+pub use permissions::REGISTERED_EXPIRED_SEC_TOKEN;
 pub use permissions::REGISTERED_PASSWORD;
+pub use permissions::REGISTERED_READONLY_SEC_TOKEN;
 pub use permissions::REGISTERED_SEC_TOKEN;
 pub use permissions::REGISTERED_USERNAME;
 
@@ -23,5 +25,5 @@ pub fn create_routes() -> Router<SharedQRadarMock> {
     Router::new()
         .route("/", axum::routing::get(global::root))
         .merge(api::create_routes())
-        .fallback(global::multi_not_found_handler)
+        .fallback(global::global_not_found_handler)
 }

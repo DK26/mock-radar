@@ -1,7 +1,9 @@
 use anyhow::Context;
 
 use mock_radar::REGISTERED_BASIC_TOKEN;
+use mock_radar::REGISTERED_EXPIRED_SEC_TOKEN;
 use mock_radar::REGISTERED_PASSWORD;
+use mock_radar::REGISTERED_READONLY_SEC_TOKEN;
 use mock_radar::REGISTERED_SEC_TOKEN;
 use mock_radar::REGISTERED_USERNAME;
 
@@ -34,6 +36,8 @@ async fn main() -> anyhow::Result<()> {
     println!(
         r#"
         TOKEN = {REGISTERED_SEC_TOKEN}
+        READ-ONLY TOKEN = {REGISTERED_READONLY_SEC_TOKEN}
+        EXPIRED TOKEN = {REGISTERED_EXPIRED_SEC_TOKEN}
         USERNAME = {REGISTERED_USERNAME}
         PASSWORD = {REGISTERED_PASSWORD}
         BASIC = {REGISTERED_BASIC_TOKEN}

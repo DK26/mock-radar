@@ -7,7 +7,9 @@ use axum::Json;
 use serde_json::json;
 
 use crate::permissions::REGISTERED_BASIC_TOKEN;
+use crate::permissions::REGISTERED_EXPIRED_SEC_TOKEN;
 use crate::permissions::REGISTERED_PASSWORD;
+use crate::permissions::REGISTERED_READONLY_SEC_TOKEN;
 use crate::permissions::REGISTERED_SEC_TOKEN;
 use crate::permissions::REGISTERED_USERNAME;
 
@@ -16,6 +18,8 @@ pub(crate) async fn root() -> String {
     format!(
         r#"
         TOKEN = {REGISTERED_SEC_TOKEN}
+        READ-ONLY TOKEN = {REGISTERED_READONLY_SEC_TOKEN}
+        EXPIRED TOKEN = {REGISTERED_EXPIRED_SEC_TOKEN}
         USERNAME = {REGISTERED_USERNAME}
         PASSWORD = {REGISTERED_PASSWORD}
         BASIC = {REGISTERED_BASIC_TOKEN}
@@ -104,7 +108,7 @@ pub(crate) async fn not_found_handler() -> Response {
 }
 
 #[tracing::instrument(level = "debug", ret)]
-pub(crate) async fn multi_not_found_handler(uri: Uri) -> Response {
+pub(crate) async fn global_not_found_handler(uri: Uri) -> Response {
     // I hate this solution. Didn't find anything better.
     if uri.path().starts_with("/api/") {
         not_found_api_handler(uri).await
