@@ -6,7 +6,7 @@ use tower::ServiceExt; // for `call`, `oneshot`, and `ready`
 
 use mock_radar::SharedQRadarMock;
 
-use super::ENDPOINT_URI;
+use crate::api::reference_data::sets::ENDPOINT_URI;
 
 #[tokio::test]
 pub(crate) async fn get_reference_set_with_sec_token_success() {
