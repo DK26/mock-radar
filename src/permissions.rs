@@ -1,6 +1,13 @@
+// Full permissions (Read & Write), can do anything
 pub const REGISTERED_SEC_TOKEN: &str = "3472f695-9ea3-43f4-8762-55d259446c60";
+
+// Can only access endpoints using the `GET` method
 pub const REGISTERED_READONLY_SEC_TOKEN: &str = "d6391576-55d3-4c44-85d8-5665b0d2336f";
+
+// Same as if no SEC token was provider
 pub const REGISTERED_EXPIRED_SEC_TOKEN: &str = "e3b189ab-3e3d-4ed8-a8e1-be4b75a6c3c0";
+
+// Full permissions (Read & Write), can do anything
 pub const REGISTERED_USERNAME: &str = "admin";
 pub const REGISTERED_PASSWORD: &str = "pass";
 pub const REGISTERED_BASIC_TOKEN: &str = "YWRtaW46cGFzcw==";
