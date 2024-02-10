@@ -15,18 +15,17 @@ pub(crate) async fn post_reference_set_with_sec_token_success() {
     let shared_qradar_mock = SharedQRadarMock::default();
     let router = mock_radar::create_routes();
 
-    let name: &str = "test_ip_addresses";
-    let element_type = "IP";
+    let name = urlencoding::encode("test_ip_addresses");
+    let element_type = urlencoding::encode("IP");
 
     let uri = format!("{ENDPOINT_URI}?element_type={element_type}&name={name}");
-    let encoded_uri = format!("/{}", urlencoding::encode(&uri));
 
     let response = router
         .with_state(shared_qradar_mock)
         .oneshot(
             Request::builder()
                 .method(http::Method::POST)
-                .uri(encoded_uri)
+                .uri(uri)
                 .header("Version", "12.0")
                 .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
                 .header(http::header::ACCEPT, mime::APPLICATION_JSON.as_ref())
