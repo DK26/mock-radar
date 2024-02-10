@@ -10,9 +10,17 @@ However, what I am trying to achieve with this project is having the most accura
 
 I though I'd share my own work in case others find it useful. Who knows, maybe even collaborate and add their own mocked endpoints. This could be the start of something.
 
+### Other Advantages
+
+- __Green__: Using less resources and saving on battery life, as you do not need to run a heavy virtual machine in order to develop for QRadar API, which would otherwise require:
+  - Installation & Configurations of a virtual machine environment
+
+  - 12 RAM (minimum)
+  - 250 GB available storage size (minimum)
+
 ## Why write the mock server in Rust?
 
-1. Small, low-profile, independent executable that doesn't require third party dependencies or environments, such as Python, Java(JDK) or .Net runtime installations. It can simply be compiled to any platform supported by LLVM (clang). You can even run it on your old laptop.
+1. Small, low-profile, independent executable that doesn't require third party dependencies or environments, such as Python, Java(JDK) or .Net runtime installations. It can simply be compiled to any platform supported by LLVM (clang). You can even run it on your old laptop (a.k.a green technology).
 
 2. Very powerful and reliable type system for coding correctly which is also excellent for potentially big projects
 
