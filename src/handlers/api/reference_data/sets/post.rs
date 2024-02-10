@@ -6,7 +6,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{extractors::Permissions, SharedQRadarMock};
+use crate::{extractors::permissions::Permissions, SharedQRadarMock};
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct PostRequest {
