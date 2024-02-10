@@ -6,12 +6,15 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{extractors::permissions::Permissions, SharedQRadarMock};
+use crate::{
+    extractors::{maybe_query::MaybeQuery, permissions::Permissions},
+    handlers, SharedQRadarMock,
+};
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct PostRequest {
-    element_type: String,
-    name: String,
+    element_type: Option<String>,
+    name: Option<String>,
     fields: Option<String>,
     time_to_live: Option<String>,
     timeout_type: Option<String>,
@@ -24,10 +27,20 @@ pub(crate) struct PostResponse {}
 pub(crate) async fn post_reference_data_sets_handler(
     Permissions(authorization_token): Permissions,
     State(shared_qradar_mock): State<SharedQRadarMock>,
-    Query(request): Query<PostRequest>,
+    MaybeQuery(maybe_post_request): MaybeQuery<PostRequest>,
     headers: HeaderMap,
 ) -> anyhow::Result<Json<PostResponse>, Response> {
+    let post_request = maybe_post_request
+        .ok_or_else(|| handlers::errors::unprocessable_entity_response("name"))?;
+
+    let name_param = post_request
+        .name
+        .ok_or_else(|| handlers::errors::unprocessable_entity_response("name"))?;
+
+    let element_type_param = post_request
+        .element_type
+        .ok_or_else(|| handlers::errors::unprocessable_entity_response("element_type"))?;
+
     let t = shared_qradar_mock.write();
-    Html("<h1>Es tut mir leid.. Work in progress</h1>");
-    todo!()
+    todo!();
 }
