@@ -31,15 +31,15 @@ pub(crate) async fn post_reference_data_sets_handler(
     headers: HeaderMap,
 ) -> anyhow::Result<Json<PostResponse>, Response> {
     let post_request = maybe_post_request
-        .ok_or_else(|| handlers::errors::unprocessable_entity_response("name"))?;
+        .ok_or_else(|| handlers::errors::response::create_unprocessable_entity_response("name"))?;
 
     let name_param = post_request
         .name
-        .ok_or_else(|| handlers::errors::unprocessable_entity_response("name"))?;
+        .ok_or_else(|| handlers::errors::response::create_unprocessable_entity_response("name"))?;
 
-    let element_type_param = post_request
-        .element_type
-        .ok_or_else(|| handlers::errors::unprocessable_entity_response("element_type"))?;
+    let element_type_param = post_request.element_type.ok_or_else(|| {
+        handlers::errors::response::create_unprocessable_entity_response("element_type")
+    })?;
 
     let t = shared_qradar_mock.write();
     todo!();
