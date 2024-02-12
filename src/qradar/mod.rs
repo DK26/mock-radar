@@ -1,2 +1,2 @@
 pub mod qradar_mock;
-mod reference_data;
+pub(crate) mod reference_data;

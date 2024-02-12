@@ -4,18 +4,40 @@ use axum::response::Response;
 use axum::Json;
 use serde_json::json;
 
-/// Creates a 422 error response
-pub(crate) fn create_unprocessable_entity_response(bad_field_name: &str) -> Response {
-    (StatusCode::UNPROCESSABLE_ENTITY, Json(json!({
-        "http_response": {
-            "code": 422,
-            "message": "The request was well-formed but was unable to be followed due to semantic errors"
-        },
-        "code": 8,
-        "description": "",
-        "details": {},
-        "message": format!("Missing required parameter \"{bad_field_name}\" from query parameters")
-    }))).into_response()
+/// Creates a 422 error response for missing a query parameter
+pub(crate) fn create_unprocessable_entity_query_parameter_missing_response(
+    missing_field_name: &str,
+) -> Response {
+    (StatusCode::UNPROCESSABLE_ENTITY, Json(json!(
+        {
+            "http_response": {
+                "code": 422,
+                "message": "The request was well-formed but was unable to be followed due to semantic errors"
+            },
+            "code": 8,
+            "description": "",
+            "details": {},
+            "message": format!("Missing required parameter \"{missing_field_name}\" from query parameters")
+        }
+    ))).into_response()
+}
+
+/// Creates a 422 error response for query parameter type mismatch
+pub(crate) fn create_unprocessable_entity_query_parameter_type_mismatch_response(
+    mismatched_field_name: &str,
+) -> Response {
+    (StatusCode::UNPROCESSABLE_ENTITY, Json(json!(
+        {
+            "http_response": {
+                "code": 422,
+                "message": "The request was well-formed but was unable to be followed due to semantic errors"
+            },
+            "code": 11,
+            "description": "",
+            "details": {},
+            "message": format!("Failed to transform user query parameter \"{mismatched_field_name}\" with a content type of \"TEXT_PLAIN\"")
+        }
+    ))).into_response()
 }
 
 /// Creates a 401 error response
