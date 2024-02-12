@@ -17,3 +17,19 @@ pub(crate) fn create_unprocessable_entity_response(bad_field_name: &str) -> Resp
         "message": format!("Missing required parameter \"{bad_field_name}\" from query parameters")
     }))).into_response()
 }
+
+/// Creates a 401 error response
+pub(crate) fn create_unauthorized_response() -> Response {
+    (StatusCode::UNAUTHORIZED, Json(json!(
+        {
+            "http_response": {
+                "code": 401,
+                "message": "You are unauthorized to access the requested resource."
+            },
+            "code": 18,
+            "description": "",
+            "details": {},
+            "message": "No SEC header present in request. Please provide it via \"SEC: token\". You may also use BASIC authentication parameters if this host supports it. e.g. \"Authorization: Basic base64Encoding\""
+        }
+    ))).into_response()
+}

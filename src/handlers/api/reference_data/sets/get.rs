@@ -1,16 +1,14 @@
 use axum::{
-    extract::{Query, State},
+    extract::State,
     http::HeaderMap,
-    response::{Html, IntoResponse, Response},
-    Json,
+    response::{Html, IntoResponse},
 };
-use serde::{Deserialize, Serialize};
 
-use crate::{extractors::permissions::Permissions, SharedQRadarMock};
+use crate::{extractors::permissions::ReadPermission, SharedQRadarMock};
 
 #[tracing::instrument(level = "debug", ret, skip(shared_qradar_mock))]
 pub(crate) async fn get_reference_data_sets_handler(
-    Permissions(authorization_token): Permissions,
+    ReadPermission(read_permission): ReadPermission,
     State(shared_qradar_mock): State<SharedQRadarMock>,
     headers: HeaderMap,
 ) -> impl IntoResponse {

@@ -9,6 +9,7 @@ use axum::Router;
 
 pub use permissions::REGISTERED_BASIC_TOKEN;
 pub use permissions::REGISTERED_EXPIRED_SEC_TOKEN;
+pub use permissions::REGISTERED_MISSING_PERMISSIONS_SEC_TOKEN;
 pub use permissions::REGISTERED_PASSWORD;
 pub use permissions::REGISTERED_READONLY_SEC_TOKEN;
 pub use permissions::REGISTERED_SEC_TOKEN;

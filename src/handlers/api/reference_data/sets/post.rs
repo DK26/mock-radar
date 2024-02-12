@@ -1,13 +1,8 @@
-use axum::{
-    extract::{Query, State},
-    http::HeaderMap,
-    response::{Html, IntoResponse, Response},
-    Json,
-};
+use axum::{extract::State, http::HeaderMap, response::Response, Json};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    extractors::{maybe_query::MaybeQuery, permissions::Permissions},
+    extractors::{maybe_query::MaybeQuery, permissions::WritePermission},
     handlers, SharedQRadarMock,
 };
 
@@ -25,7 +20,7 @@ pub(crate) struct PostResponse {}
 
 #[tracing::instrument(level = "debug", ret, skip(shared_qradar_mock))]
 pub(crate) async fn post_reference_data_sets_handler(
-    Permissions(authorization_token): Permissions,
+    WritePermission(write_permission): WritePermission,
     State(shared_qradar_mock): State<SharedQRadarMock>,
     MaybeQuery(maybe_post_request): MaybeQuery<PostRequest>,
     headers: HeaderMap,
