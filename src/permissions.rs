@@ -36,7 +36,7 @@ pub(crate) enum AuthenticationToken {
 }
 
 #[derive(Debug)]
-pub(crate) struct AuthenticationProof {
+pub(crate) struct Permissions {
     pub(crate) write_permission: Option<WritePermission>,
     pub(crate) read_permission: Option<ReadPermission>,
 }
@@ -47,10 +47,10 @@ pub(crate) struct WritePermission {
     _blocker: InitializationBlocker,
 }
 
-impl TryFrom<AuthenticationProof> for WritePermission {
+impl TryFrom<Permissions> for WritePermission {
     type Error = PermissionsError;
 
-    fn try_from(authorization_token: AuthenticationProof) -> Result<Self, Self::Error> {
+    fn try_from(authorization_token: Permissions) -> Result<Self, Self::Error> {
         authorization_token
             .write_permission
             .ok_or(PermissionsError::WritePermissionForbidden)
@@ -63,17 +63,17 @@ pub(crate) struct ReadPermission {
     _blocker: InitializationBlocker,
 }
 
-impl TryFrom<AuthenticationProof> for ReadPermission {
+impl TryFrom<Permissions> for ReadPermission {
     type Error = PermissionsError;
 
-    fn try_from(authorization_token: AuthenticationProof) -> Result<Self, Self::Error> {
+    fn try_from(authorization_token: Permissions) -> Result<Self, Self::Error> {
         authorization_token
             .read_permission
             .ok_or(PermissionsError::ReadPermissionForbidden)
     }
 }
 
-impl AuthenticationProof {
+impl Permissions {
     pub(crate) fn validate(authentication: AuthenticationToken) -> Option<Self> {
         match authentication {
             AuthenticationToken::Sec(token) if token.as_str() == REGISTERED_SEC_TOKEN => {
@@ -126,31 +126,28 @@ mod tests {
         REGISTERED_READONLY_SEC_TOKEN,
     };
 
-    use super::{AuthenticationProof, AuthenticationToken, REGISTERED_SEC_TOKEN};
+    use super::{AuthenticationToken, Permissions, REGISTERED_SEC_TOKEN};
 
     #[test]
     fn token_authentication_success() {
-        let maybe_authorization_token = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ));
+        let maybe_authorization_token =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()));
 
         assert!(maybe_authorization_token.is_some());
     }
 
     #[test]
     fn token_authentication_failure() {
-        let maybe_authorization_token = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_BASIC_TOKEN.to_string(),
-        ));
+        let maybe_authorization_token =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_BASIC_TOKEN.to_string()));
 
         assert!(maybe_authorization_token.is_none());
     }
 
     #[test]
     fn token_authentication_read_write_permissions_success() {
-        let maybe_authorization_token = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ));
+        let maybe_authorization_token =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()));
 
         let authorization_token = maybe_authorization_token.expect("unable to authenticate token");
 
@@ -160,7 +157,7 @@ mod tests {
 
     #[test]
     fn token_authentication_read_only_permissions_success() {
-        let maybe_authorization_token = AuthenticationProof::validate(AuthenticationToken::Sec(
+        let maybe_authorization_token = Permissions::validate(AuthenticationToken::Sec(
             REGISTERED_READONLY_SEC_TOKEN.to_string(),
         ));
 
@@ -172,7 +169,7 @@ mod tests {
 
     #[test]
     fn token_authentication_missing_permissions_success() {
-        let maybe_authorization_token = AuthenticationProof::validate(AuthenticationToken::Sec(
+        let maybe_authorization_token = Permissions::validate(AuthenticationToken::Sec(
             REGISTERED_MISSING_PERMISSIONS_SEC_TOKEN.to_string(),
         ));
 
@@ -184,7 +181,7 @@ mod tests {
 
     #[test]
     fn basic_authentication_success() {
-        let maybe_authorization_token = AuthenticationProof::validate(AuthenticationToken::Basic(
+        let maybe_authorization_token = Permissions::validate(AuthenticationToken::Basic(
             REGISTERED_BASIC_TOKEN.to_string(),
         ));
 
@@ -193,9 +190,8 @@ mod tests {
 
     #[test]
     fn basic_authentication_failure() {
-        let maybe_authorization_token = AuthenticationProof::validate(AuthenticationToken::Basic(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ));
+        let maybe_authorization_token =
+            Permissions::validate(AuthenticationToken::Basic(REGISTERED_SEC_TOKEN.to_string()));
 
         assert!(maybe_authorization_token.is_none());
     }

@@ -44,10 +44,10 @@ fn extract_authentication_token(parts: &mut Parts) -> Option<AuthenticationToken
 }
 
 #[derive(Debug)]
-pub struct AuthenticationProof(pub permissions::AuthenticationProof);
+pub struct Permissions(pub permissions::Permissions);
 
 #[axum::async_trait]
-impl<S> FromRequestParts<S> for AuthenticationProof
+impl<S> FromRequestParts<S> for Permissions
 where
     S: Send + Sync,
 {
@@ -58,10 +58,10 @@ where
         let maybe_authentication_token = extract_authentication_token(parts);
 
         let authentication_token = maybe_authentication_token
-            .and_then(permissions::AuthenticationProof::validate)
+            .and_then(permissions::Permissions::validate)
             .ok_or_else(handlers::errors::response::create_unauthorized_response)?;
 
-        Ok(AuthenticationProof(authentication_token))
+        Ok(Permissions(authentication_token))
     }
 }
 
@@ -78,13 +78,13 @@ where
     async fn from_request_parts(parts: &mut Parts, _: &S) -> Result<Self, Self::Rejection> {
         let maybe_authentication_token = extract_authentication_token(parts);
 
-        let authentication_proof = maybe_authentication_token
-            .and_then(permissions::AuthenticationProof::validate)
+        let permissions = maybe_authentication_token
+            .and_then(permissions::Permissions::validate)
             .ok_or_else(handlers::errors::response::create_unauthorized_response)?;
 
-        Ok(WritePermission(authentication_proof.try_into().map_err(
-            |_| handlers::errors::response::create_forbidden_response(),
-        )?))
+        Ok(WritePermission(permissions.try_into().map_err(|_| {
+            handlers::errors::response::create_forbidden_response()
+        })?))
     }
 }
 
@@ -102,12 +102,12 @@ where
         // TODO: Validate required behavior for when both `Authorization` & `SEC` headers are provided, but one of them is wrong.
         let maybe_authentication_token = extract_authentication_token(parts);
 
-        let authentication_proof = maybe_authentication_token
-            .and_then(permissions::AuthenticationProof::validate)
+        let permissions = maybe_authentication_token
+            .and_then(permissions::Permissions::validate)
             .ok_or_else(handlers::errors::response::create_unauthorized_response)?;
 
-        Ok(ReadPermission(authentication_proof.try_into().map_err(
-            |_| handlers::errors::response::create_forbidden_response(),
-        )?))
+        Ok(ReadPermission(permissions.try_into().map_err(|_| {
+            handlers::errors::response::create_forbidden_response()
+        })?))
     }
 }

@@ -201,7 +201,7 @@ mod tests {
     use std::collections::HashSet;
 
     use crate::{
-        permissions::{AuthenticationProof, AuthenticationToken, REGISTERED_SEC_TOKEN},
+        permissions::{AuthenticationToken, Permissions, REGISTERED_SEC_TOKEN},
         qradar::{
             qradar_mock::QRadarMock,
             reference_data::sets::{ReferenceSet, ReferenceSetError},
@@ -212,17 +212,14 @@ mod tests {
 
     #[test]
     fn add_reference_set_success() {
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
@@ -234,32 +231,26 @@ mod tests {
     fn add_reference_set_double_insert_failure() {
         let test_reference_set_name = TEST_REFERENCE_SET_NAME.to_string();
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             test_reference_set_name.clone(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             test_reference_set_name.clone(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
@@ -272,17 +263,14 @@ mod tests {
 
     #[test]
     fn get_reference_set_success() {
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
@@ -292,15 +280,12 @@ mod tests {
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let maybe_reference_set = mock.get_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
         );
 
@@ -309,32 +294,26 @@ mod tests {
 
     #[test]
     fn delete_reference_set_success() {
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let delete_result = mock.delete_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
         );
 
@@ -343,17 +322,14 @@ mod tests {
 
     #[test]
     fn delete_reference_set_does_not_exist_failure() {
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let delete_result = mock.delete_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
         );
 
@@ -366,32 +342,26 @@ mod tests {
     fn insert_to_reference_set_success() {
         let test_value = "test value";
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let result = mock.insert_to_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             test_value,
         );
@@ -403,17 +373,14 @@ mod tests {
     fn insert_to_reference_set_missing_set_failure() {
         let test_value = "test value";
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let result = mock.insert_to_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             test_value,
         );
@@ -427,32 +394,26 @@ mod tests {
     fn insert_to_reference_set_wrong_type_failure() {
         let test_value = "test value";
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::Numeric(HashSet::new()),
         );
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let result = mock.insert_to_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             test_value,
         );
@@ -466,47 +427,38 @@ mod tests {
     fn delete_from_reference_set_success() {
         let test_value = "test value";
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let result = mock.insert_to_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             test_value,
         );
 
         assert!(result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let delete_result = mock.delete_from_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             test_value,
         );
@@ -518,32 +470,26 @@ mod tests {
     fn delete_from_reference_set_entry_does_not_exist_failure() {
         let test_value = "test value";
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::AlphaNumeric(HashSet::new()),
         );
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let delete_result = mock.delete_from_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             test_value,
         );
@@ -557,17 +503,14 @@ mod tests {
     fn delete_from_reference_set_that_does_not_exist_failure() {
         let test_value = "test value";
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let delete_result = mock.delete_from_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             test_value,
         );
@@ -581,32 +524,26 @@ mod tests {
     fn delete_from_reference_set_wrong_type_failure() {
         let test_value = "test value";
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::Numeric(HashSet::new()),
         );
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let delete_result = mock.delete_from_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             test_value,
         );
@@ -621,47 +558,38 @@ mod tests {
         let insert_value = "Test VaLUE";
         let validate_value = "test value";
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let mut mock = QRadarMock::new();
 
         let add_result = mock.add_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME.to_string(),
             ReferenceSet::AlphaNumericIgnoreCase(HashSet::new()),
         );
 
         assert!(add_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let insert_result = mock.insert_to_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
             insert_value,
         );
 
         assert!(insert_result.is_ok());
 
-        let authentication_proof = AuthenticationProof::validate(AuthenticationToken::Sec(
-            REGISTERED_SEC_TOKEN.to_string(),
-        ))
-        .expect("failed authentication");
+        let permissions =
+            Permissions::validate(AuthenticationToken::Sec(REGISTERED_SEC_TOKEN.to_string()))
+                .expect("failed authentication");
 
         let maybe_reference_set_readonly_access = mock.get_reference_set(
-            authentication_proof
-                .try_into()
-                .expect("insufficient permissions"),
+            permissions.try_into().expect("insufficient permissions"),
             TEST_REFERENCE_SET_NAME,
         );
 
