@@ -16,7 +16,7 @@ pub(crate) struct TestPostResponse {
     timeout_type: String,
     number_of_elements: u32,
     #[allow(unused)]
-    creation_time: u64, // Assuming successful deserialization implies a valid timestamp
+    creation_time: u128, // Assuming successful deserialization implies a valid timestamp
     name: String,
     element_type: String,
 }

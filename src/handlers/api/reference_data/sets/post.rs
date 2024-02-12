@@ -1,10 +1,12 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use axum::{
     extract::State,
     http::{HeaderMap, StatusCode},
     response::{IntoResponse, Response},
     Json,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
@@ -21,16 +23,13 @@ pub(crate) struct PostRequest {
     timeout_type: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
-pub(crate) struct PostResponse {}
-
 #[tracing::instrument(level = "debug", ret, skip(shared_qradar_mock))]
 pub(crate) async fn post_reference_data_sets_handler(
     WritePermission(write_permission): WritePermission,
     State(shared_qradar_mock): State<SharedQRadarMock>,
     MaybeQuery(maybe_post_request): MaybeQuery<PostRequest>,
     headers: HeaderMap,
-) -> anyhow::Result<Json<PostResponse>, Response> {
+) -> anyhow::Result<Response, Response> {
     let post_request = maybe_post_request.ok_or_else(|| {
         handlers::errors::response::create_unprocessable_entity_query_parameter_missing_response(
             "name",
@@ -55,7 +54,7 @@ pub(crate) async fn post_reference_data_sets_handler(
 
     let action_result = qradar_mock_write_guard.add_reference_set(
         write_permission,
-        name_param,
+        name_param.clone(),
         element_type_param.parse().map_err(|_| {
             handlers::errors::response::create_unprocessable_entity_query_parameter_type_mismatch_response(
                 "element_type",
@@ -64,7 +63,24 @@ pub(crate) async fn post_reference_data_sets_handler(
     );
 
     match action_result {
-        Ok(_) => todo!(),
+        Ok(_) => {
+            let now = SystemTime::now();
+            let creation_time = now.duration_since(UNIX_EPOCH).map_err(|_|StatusCode::INTERNAL_SERVER_ERROR.into_response())?.as_millis();
+            Ok(
+                (
+                    StatusCode::CREATED,
+                    Json(json!(
+                        {
+                            "timeout_type": "UNKNOWN",
+                            "number_of_elements": 0,
+                            "creation_time": creation_time,
+                            "name": name_param,
+                            "element_type": element_type_param
+                        }
+                    ))
+                ).into_response()
+            )
+        },
         Err(e) => match e {
             crate::qradar::reference_data::sets::ReferenceSetError::ReferenceSetAlreadyExists(
                 name,

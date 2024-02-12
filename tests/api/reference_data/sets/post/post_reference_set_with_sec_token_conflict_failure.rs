@@ -62,7 +62,7 @@ pub(crate) async fn post_reference_set_with_sec_token_conflict_failure() {
         .oneshot(
             Request::builder()
                 .method(http::Method::POST)
-                .uri(urlencoding::encode(&uri).as_ref())
+                .uri(&uri)
                 .header("Version", "12.0")
                 .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
                 .header(http::header::ACCEPT, mime::APPLICATION_JSON.as_ref())
