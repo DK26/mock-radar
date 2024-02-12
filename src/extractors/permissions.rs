@@ -83,7 +83,7 @@ where
             .ok_or_else(handlers::errors::response::create_unauthorized_response)?;
 
         Ok(WritePermission(authentication_proof.try_into().map_err(
-            |_| handlers::errors::response::create_unauthorized_response(),
+            |_| handlers::errors::response::create_forbidden_response(),
         )?))
     }
 }
@@ -107,7 +107,7 @@ where
             .ok_or_else(handlers::errors::response::create_unauthorized_response)?;
 
         Ok(ReadPermission(authentication_proof.try_into().map_err(
-            |_| handlers::errors::response::create_unauthorized_response(),
+            |_| handlers::errors::response::create_forbidden_response(),
         )?))
     }
 }

@@ -33,3 +33,22 @@ pub(crate) fn create_unauthorized_response() -> Response {
         }
     ))).into_response()
 }
+
+pub(crate) fn create_forbidden_response() -> Response {
+    (
+        StatusCode::FORBIDDEN,
+        Json(json!(
+            {
+                "http_response": {
+                    "code": 403,
+                    "message": "Your account is not authorized to access the requested resource"
+                },
+                "code": 26,
+                "description": "",
+                "details": {},
+                "message": "User has insufficient capabilities to access this endpoint resource"
+            }
+        )),
+    )
+        .into_response()
+}
