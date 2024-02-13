@@ -11,14 +11,25 @@ use super::TestPostResponse;
 use crate::api::reference_data::sets::ENDPOINT_URI;
 
 #[tokio::test]
-pub(crate) async fn post_reference_set_with_sec_token_success() {
+pub(crate) async fn post_reference_set_with_sec_token_all_options_unfiltered_success() {
     let shared_qradar_mock = SharedQRadarMock::default();
     let router = mock_radar::create_routes();
 
-    let name = urlencoding::encode("test_ip_addresses");
-    let element_type = urlencoding::encode("IP");
+    // Mandatory fields
+    let element_type = "IP";
+    let name = "test_ip_addresses";
 
-    let uri = format!("{ENDPOINT_URI}?element_type={element_type}&name={name}");
+    // Optional fields
+    let time_to_live = "1 year 2 months 2 days 3 hours 2 minutes 32.5 seconds";
+    let timeout_type = "FIRST_SEEN";
+
+    let uri = format!(
+        "{ENDPOINT_URI}?element_type={}&name={}&time_to_live={}&timeout_type={}",
+        urlencoding::encode(element_type),
+        urlencoding::encode(name),
+        urlencoding::encode(time_to_live),
+        urlencoding::encode(timeout_type)
+    );
 
     let response = router
         .with_state(shared_qradar_mock)
@@ -47,12 +58,12 @@ pub(crate) async fn post_reference_set_with_sec_token_success() {
     assert_eq!(
         response_body,
         TestPostResponse {
-            timeout_type: "UNKNOWN".to_string(),
+            timeout_type: timeout_type.to_string(),
             number_of_elements: 0,
-            creation_time: 0,
+            creation_time: 0, // Ignoring `creation_time` in comparison
             name: name.to_string(),
             element_type: element_type.to_string(),
-            time_to_live: None
+            time_to_live: Some("1 years 2 mons 2 days 3 hours 2 mins 32.50 secs".to_string())
         }
     );
 }

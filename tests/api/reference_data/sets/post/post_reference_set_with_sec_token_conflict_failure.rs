@@ -53,7 +53,8 @@ pub(crate) async fn post_reference_set_with_sec_token_conflict_failure() {
             number_of_elements: 0,
             creation_time: 0, // Ignoring `creation_time` in comparison
             name: name.to_string(),
-            element_type: element_type.to_string()
+            element_type: element_type.to_string(),
+            time_to_live: None
         }
     );
 

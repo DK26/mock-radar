@@ -75,7 +75,7 @@ pub(crate) async fn post_reference_data_sets_handler(
                     StatusCode::CREATED,
                     Json(json!(
                         {
-                            "timeout_type": "UNKNOWN",
+                            "timeout_type": post_request.timeout_type.unwrap_or_else(||String::from("UNKNOWN")),
                             "number_of_elements": 0,
                             "creation_time": creation_time,
                             "name": name_param,
