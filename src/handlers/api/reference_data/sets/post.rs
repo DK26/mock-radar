@@ -1,4 +1,5 @@
 use std::time::{SystemTime, UNIX_EPOCH};
+use tracing::error;
 
 use axum::{
     extract::State,
@@ -65,7 +66,10 @@ pub(crate) async fn post_reference_data_sets_handler(
     match action_result {
         Ok(_) => {
             let now = SystemTime::now();
-            let creation_time = now.duration_since(UNIX_EPOCH).map_err(|_|StatusCode::INTERNAL_SERVER_ERROR.into_response())?.as_millis();
+            let creation_time = now.duration_since(UNIX_EPOCH).map_err(|e|{
+                error!("Did not expect the following error: {e:#?}");
+                StatusCode::INTERNAL_SERVER_ERROR.into_response()
+            })?.as_millis();
             Ok(
                 (
                     StatusCode::CREATED,
@@ -99,10 +103,11 @@ pub(crate) async fn post_reference_data_sets_handler(
                     }
                 )),
             ).into_response()),
-            _ => {
+            e => {
                 // TODO: Maybe consider a better organization for the ReferenceSet errors, 
                 //  due to having a single failure result per specific actions
                 // No other error could be produced here.
+                error!("Did not expect the following error: {e:#?}");
                 Err(StatusCode::INTERNAL_SERVER_ERROR.into_response())
             }
         },
