@@ -15,8 +15,8 @@ I though I'd share my own work in case others find it useful. Who knows, maybe e
 - __Green__: Using less resources and saving on battery life, as you do not need to run a heavy virtual machine in order to develop for QRadar API, which would otherwise require:
   - Installation & Configurations of a virtual machine environment
 
-  - 12 RAM (minimum)
-  - 250 GB available storage size (minimum)
+  - 12 GB of RAM (minimum)
+  - 250 GB of available storage size (minimum)
 
 ## Why write the mock server in Rust?
 
