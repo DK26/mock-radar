@@ -1,2 +1,2 @@
-pub(crate) mod maybe_query;
+pub(crate) mod optional_query;
 pub(crate) mod permissions;

@@ -4,10 +4,10 @@ use axum::extract::{rejection::QueryRejection, FromRequestParts};
 use serde::de::DeserializeOwned;
 
 #[derive(Debug)]
-pub struct MaybeQuery<T>(pub Option<T>);
+pub struct OptionalQuery<T>(pub Option<T>);
 
 #[axum::async_trait]
-impl<T, S> FromRequestParts<S> for MaybeQuery<T>
+impl<T, S> FromRequestParts<S> for OptionalQuery<T>
 where
     T: DeserializeOwned,
     axum::extract::Query<T>: FromRequestParts<S, Rejection = QueryRejection>,
