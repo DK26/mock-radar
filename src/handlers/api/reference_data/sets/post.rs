@@ -7,13 +7,22 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::{
-    extractors::{maybe_query::MaybeQuery, permissions::WritePermission},
+    extractors::{optional_query::OptionalQuery, permissions::WritePermission},
     handlers, SharedQRadarMock,
 };
+
+const DEFAULT_RETURN_FIELDS: [&str; 6] = [
+    "timeout_type",
+    "number_of_elements",
+    "creation_time",
+    "name",
+    "element_type",
+    "time_to_live",
+];
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct PostRequest {
@@ -24,11 +33,32 @@ pub(crate) struct PostRequest {
     timeout_type: Option<String>,
 }
 
+#[derive(Debug, Serialize)]
+pub(crate) struct PostResponse {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    timeout_type: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    number_of_elements: Option<u64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    creation_time: Option<u128>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    element_type: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    time_to_live: Option<String>,
+}
+
 #[tracing::instrument(level = "debug", ret, skip(shared_qradar_mock))]
 pub(crate) async fn post_reference_data_sets_handler(
     WritePermission(write_permission): WritePermission,
     State(shared_qradar_mock): State<SharedQRadarMock>,
-    MaybeQuery(maybe_post_request): MaybeQuery<PostRequest>,
+    OptionalQuery(maybe_post_request): OptionalQuery<PostRequest>,
     headers: HeaderMap,
 ) -> anyhow::Result<Response, Response> {
     let post_request = maybe_post_request.ok_or_else(|| {
@@ -65,6 +95,18 @@ pub(crate) async fn post_reference_data_sets_handler(
 
     match action_result {
         Ok(_) => {
+     
+            let fields_param: Option<Vec<String>> = post_request.fields.map(|fields_param| fields_param.split(',').map(|field| field.trim().to_owned()).collect());
+
+            let fields: Vec<&str> = match fields_param {
+                Some(ref selection) => selection
+                    .iter()
+                    .map(|s| s.as_str()) 
+                    .collect(),
+                None => DEFAULT_RETURN_FIELDS.to_vec(),
+            };
+        
+
             let now = SystemTime::now();
             let creation_time = now.duration_since(UNIX_EPOCH).map_err(|e|{
                 error!("Did not expect the following error: {e:#?}");
@@ -73,15 +115,14 @@ pub(crate) async fn post_reference_data_sets_handler(
             Ok(
                 (
                     StatusCode::CREATED,
-                    Json(json!(
-                        {
-                            "timeout_type": post_request.timeout_type.unwrap_or_else(||String::from("UNKNOWN")),
-                            "number_of_elements": 0,
-                            "creation_time": creation_time,
-                            "name": name_param,
-                            "element_type": element_type_param
-                        }
-                    ))
+                    Json(PostResponse { 
+                        timeout_type: fields.contains(&"timeout_type").then_some(post_request.timeout_type.unwrap_or_else(||String::from("UNKNOWN"))),
+                        number_of_elements: fields.contains(&"number_of_elements").then_some(0), 
+                        creation_time: fields.contains(&"creation_time").then_some(creation_time), 
+                        name: fields.contains(&"name").then_some(name_param), 
+                        element_type: fields.contains(&"element_type").then_some(element_type_param),
+                        time_to_live: fields.contains(&"time_to_live").then_some(post_request.time_to_live).flatten()
+                    })
                 ).into_response()
             )
         },

@@ -8,7 +8,7 @@ use tower::ServiceExt; // for `call`, `oneshot`, and `ready`
 use mock_radar::{SharedQRadarMock, REGISTERED_SEC_TOKEN};
 
 use super::TestPostResponse;
-use crate::api::reference_data::sets::ENDPOINT_URI;
+use crate::api::reference_data::sets::{post::CreationTime, ENDPOINT_URI};
 
 #[tokio::test]
 pub(crate) async fn post_reference_set_with_sec_token_success() {
@@ -49,7 +49,7 @@ pub(crate) async fn post_reference_set_with_sec_token_success() {
         TestPostResponse {
             timeout_type: "UNKNOWN".to_string(),
             number_of_elements: 0,
-            creation_time: 0,
+            creation_time: CreationTime::default(),
             name: name.to_string(),
             element_type: element_type.to_string(),
             time_to_live: None
