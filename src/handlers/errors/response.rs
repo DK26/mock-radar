@@ -40,6 +40,24 @@ pub(crate) fn create_unprocessable_entity_query_parameter_type_mismatch_response
     ))).into_response()
 }
 
+/// Creates a 422 error response for query parameter `select` having invalid field name
+pub(crate) fn create_unprocessable_entity_query_parameter_select_invalid_field_name_response(
+    invalid_field_name: &str,
+) -> Response {
+    (StatusCode::UNPROCESSABLE_ENTITY, Json(json!(
+        {
+            "http_response": {
+                "code": 422,
+                "message": "The request was well-formed but was unable to be followed due to semantic errors"
+            },
+            "code": 30,
+            "description": "",
+            "details": {},
+            "message": format!("Specified field \"{invalid_field_name}\" is not recognized by this endpoint for media type \"application/json\"")
+        }
+    ))).into_response()
+}
+
 /// Creates a 401 error response
 pub(crate) fn create_unauthorized_response() -> Response {
     (StatusCode::UNAUTHORIZED, Json(json!(
