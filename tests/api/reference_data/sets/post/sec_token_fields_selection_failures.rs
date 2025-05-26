@@ -160,7 +160,7 @@ pub(crate) async fn post_reference_set_with_sec_token_fields_selection_multiple_
                 "details": {},
                 "message": "fields parameter value \"name, invalid1, invalid2, name\" was invalid. Specified field \"name\" was used more than once at the same level"
             }
-        )
+        ) // TODO: What happens if we put more than 1 double?
     );
 }
 

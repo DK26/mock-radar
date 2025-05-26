@@ -1,23 +1,24 @@
-pub(crate) mod post_reference_set_with_readonly_sec_token_forbidden_failure;
-pub(crate) mod post_reference_set_with_sec_token_all_options_unfiltered_success;
-pub(crate) mod post_reference_set_with_sec_token_conflict_failure;
-pub(crate) mod post_reference_set_with_sec_token_fields_multiple_select_timeout_type_and_name_success;
-pub(crate) mod post_reference_set_with_sec_token_fields_select_creation_time_success;
-pub(crate) mod post_reference_set_with_sec_token_fields_select_element_type_success;
-pub(crate) mod post_reference_set_with_sec_token_fields_select_name_success;
-pub(crate) mod post_reference_set_with_sec_token_fields_select_number_of_elements_success;
-pub(crate) mod post_reference_set_with_sec_token_fields_select_time_to_live_empty_success;
-pub(crate) mod post_reference_set_with_sec_token_fields_select_time_to_live_success;
-pub(crate) mod post_reference_set_with_sec_token_fields_select_timeout_type_success;
-pub(crate) mod post_reference_set_with_sec_token_fields_selection_failures;
-pub(crate) mod post_reference_set_with_sec_token_request_invalidation_sequence_failure;
-pub(crate) mod post_reference_set_with_sec_token_success;
-pub(crate) mod post_reference_set_with_sec_token_without_params_failure;
+pub(crate) mod readonly_sec_token_forbidden_failure;
+pub(crate) mod sec_token_all_options_unfiltered_success;
+pub(crate) mod sec_token_conflict_failure;
+pub(crate) mod sec_token_fields_multiple_select_timeout_type_and_name_success;
+pub(crate) mod sec_token_fields_select_creation_time_success;
+pub(crate) mod sec_token_fields_select_element_type_success;
+pub(crate) mod sec_token_fields_select_name_success;
+pub(crate) mod sec_token_fields_select_number_of_elements_success;
+pub(crate) mod sec_token_fields_select_time_to_live_empty_success;
+pub(crate) mod sec_token_fields_select_time_to_live_success;
+pub(crate) mod sec_token_fields_select_timeout_type_success;
+pub(crate) mod sec_token_fields_selection_failures;
+pub(crate) mod sec_token_request_invalidation_sequence_failure;
+pub(crate) mod sec_token_success;
+pub(crate) mod sec_token_without_params_failure;
 
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Default)]
 pub(crate) struct CreationTime {
+    // TODO: A `T` type wrapper, that implemented a PartialEq with always true
     #[allow(unused)]
     pub(crate) creation_time: u64, // Assuming successful deserialization implies a valid timestamp
 }
