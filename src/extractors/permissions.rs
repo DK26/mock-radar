@@ -46,7 +46,6 @@ fn extract_authentication_token(parts: &mut Parts) -> Option<AuthenticationToken
 #[derive(Debug)]
 pub struct Permissions(pub permissions::Permissions);
 
-#[axum::async_trait]
 impl<S> FromRequestParts<S> for Permissions
 where
     S: Send + Sync,
@@ -68,7 +67,6 @@ where
 #[derive(Debug)]
 pub struct WritePermission(pub permissions::WritePermission);
 
-#[axum::async_trait]
 impl<S> FromRequestParts<S> for WritePermission
 where
     S: Send + Sync,
@@ -91,7 +89,6 @@ where
 #[derive(Debug)]
 pub struct ReadPermission(pub permissions::ReadPermission);
 
-#[axum::async_trait]
 impl<S> FromRequestParts<S> for ReadPermission
 where
     S: Send + Sync,

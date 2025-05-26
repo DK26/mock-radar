@@ -6,30 +6,30 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.7" # The web framework for building the application
-tower-http = { version = "0.5.1", features = [
+axum = "0.8.4" # The web framework for building the application
+tower-http = { version = "0.6.4", features = [
     "trace",
 ] } # Provides middleware for HTTP services, like logging and compression
-tracing = "0.1" # Application-level tracing for structured and event-based logging
-tracing-subscriber = { version = "0.3", features = [
+tracing = "0.1.41" # Application-level tracing for structured and event-based logging
+tracing-subscriber = { version = "0.3.19", features = [
     "env-filter",
 ] } # Subscriber for handling and formatting tracing events
 tokio = { version = "1", features = [
     "full",
 ] } # Async runtime; 'full' includes all essential features
-anyhow = "1.0.79"
-thiserror = "1.0.56"
-serde = { version = "1.0.196", features = ["derive"] }
-serde_json = { version = "1.0.113", features = ["preserve_order"] }
+anyhow = "1.0.98"
+thiserror = "2.0.12"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = { version = "1.0.140", features = ["preserve_order"] }
 
 # We need `indexmap` only to preserve the order in the `serde_json` crate for now
-indexmap = ">=1.8.0"
+indexmap = "2.9.0"
 
 # Uncomment only when debugging vauge handler errors. Use `#[axum_macros::debug_handler]`
 # axum-macros = "0.4.1"
 
 [dev-dependencies]
-tower = { version = "0.4", features = ["util"] }
+tower = { version = "0.5.2", features = ["util"] }
 mime = "0.3"
 urlencoding = "2.1.3"
 
