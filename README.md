@@ -28,6 +28,33 @@ I though I'd share my own work in case others find it useful. Who knows, maybe e
 
 4. Having a growing community
 
+## Project Goals & Priorities
+
+### Endpoints to Replicate
+
+In order to produce the most value out of this tool, we need to set proper priority categories for endpoint replica: 
+
+  - Endpoints that perform state mutations (e.g, Update and retrieval of data to and from QRadar, dynamically)
+  - Most commonly used endpoints:
+    - ReferenceSets
+    - Offenses
+    - CustomActions
+    - LogSources
+    - Properties
+    - Rules
+
+  Feel free to help us prioritize by opening a ticket or a discussion. Pull requests with working tests are welcomed.
+
+### AQL Engine Replication is a Non-Priority, But!
+
+We do not seek to replicate the AQL engine, because it would be both too complex and beyond the scope of this project. It may also, potentially, violate copyrights and patents by IBM. 
+
+However, a fake AQL mechanism where the user can predefine and match a pre-configured result for a pre-configured AQL query, may be available in the future, to allow for a more holistic experience when using this tool for testing in your pipeline
+
+###
+
+
+
 ## Contribution, Collaboration & Licensing
 
 ### Community
