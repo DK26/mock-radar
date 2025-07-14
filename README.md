@@ -1,78 +1,127 @@
-# mock-radar
+# Mock-Radar
 
-A highly minimalist mock server that replicates QRadar API behavior, as an aid for developing and integrating QRadar based applications by avoiding the entire setup and management of an actual QRadar environment.
+A lightweight, high-performance mock server that replicates QRadar API behavior for developing and testing QRadar-based applications without the overhead of managing an actual QRadar environment.
 
-## Why not simply write my own mock for testing?
+## Why Mock-Radar?
 
-You can do this. You'll have to mimic on your own the API behavior and duplicate code whenever is required. Nothing wrong with that.
+### The Problem with Custom Mocks
 
-However, what I am trying to achieve with this project is having the most accurate replica, which would require a community help, and do not wish to rewrite it over and over again as I may have multiple projects requiring the same mock logic.
+While you can write your own mocks for testing, this approach has limitations:
+- Duplicated effort across projects
+- Inconsistent API behavior simulation
+- Time-consuming setup for each new project
+- Lack of community-driven accuracy improvements
 
-I though I'd share my own work in case others find it useful. Who knows, maybe even collaborate and add their own mocked endpoints. This could be the start of something.
+### Our Solution
 
-### Other Advantages
+Mock-Radar aims to provide the most accurate QRadar API replica through community collaboration. Instead of reinventing the wheel for every project, we offer a shared, continuously improved mock server that benefits everyone working with QRadar integrations.
 
-- __Green__: Using less resources and saving on battery life, as you do not need to run a heavy virtual machine in order to develop for QRadar API, which would otherwise require:
-  - Installation & Configurations of a virtual machine environment
+## Key Advantages
 
-  - 12 GB of RAM (minimum)
-  - 250 GB of available storage size (minimum)
+### 🌱 **Resource Efficient**
+- **No Virtual Machine Required**: Eliminate the need for heavy VM setups
+- **Minimal System Requirements**: No 12GB RAM or 250GB storage overhead
+- **Battery Friendly**: Significantly lower resource consumption
+- **Cross-Platform**: Runs anywhere LLVM (clang) is supported
 
-## Why write the mock server in Rust?
+### ⚡ **Built with Rust**
+- **Zero Runtime Dependencies**: Self-contained executable requiring no Python, Java, or .NET installations
+- **Reliable Type System**: Robust error handling and type safety for large-scale projects
+- **Excellent Toolchain**: Built-in testing, dependency management, and cross-compilation
+- **Growing Ecosystem**: Active and supportive Rust community
 
-1. Small, low-profile, independent executable that doesn't require third party dependencies or environments, such as Python, Java(JDK) or .Net runtime installations. It can simply be compiled to any platform supported by LLVM (clang). You can even run it on your old laptop (a.k.a green technology).
+## Project Goals & Roadmap
 
-2. Very powerful and reliable type system for coding correctly which is also excellent for potentially big projects
+### Priority Endpoints
 
-3. Excellent standard toolchain for running, managing and testing projects
+To maximize value, we prioritize endpoints based on:
 
-4. Having a growing community
+1. **State-Mutating Operations**: Endpoints that update and retrieve data dynamically
+2. **Most Common Use Cases**:
+   - **Reference Sets** ✅ *Currently Implemented*
+   - **Offenses** 🚧 *Planned*
+   - **Custom Actions** 🚧 *Planned*
+   - **Log Sources** 🚧 *Planned*
+   - **Properties** 🚧 *Planned*
+   - **Rules** 🚧 *Planned*
 
-## Project Goals & Priorities
+> **Help Us Prioritize**: Open an issue or start a discussion to suggest which endpoints you need most. Pull requests with comprehensive tests are always welcome!
 
-### Endpoints to Replicate
+### AQL Engine Considerations
 
-In order to produce the most value out of this tool, we need to set proper priority categories for endpoint replica: 
+**Current Stance**: We do not plan to replicate QRadar's AQL engine due to:
+- Complexity beyond project scope
+- Potential copyright and patent concerns with IBM
 
-  - Endpoints that perform state mutations (e.g, Update and retrieval of data to and from QRadar, dynamically)
-  - Most commonly used endpoints:
-    - ReferenceSets
-    - Offenses
-    - CustomActions
-    - LogSources
-    - Properties
-    - Rules
+**Future Possibility**: A configurable AQL response system where users can pre-define query-response mappings for testing scenarios may be considered for enhanced pipeline integration.
 
-  Feel free to help us prioritize by opening a ticket or a discussion. Pull requests with working tests are welcomed.
+## Getting Started
 
-### AQL Engine Replication is a Non-Priority, But!
+### Installation
+```bash
+# Build from source (requires Rust)
+git clone https://github.com/DK26/mock-radar
+cd mock-radar
+cargo build --release
+```
 
-We do not seek to replicate the AQL engine, because it would be both too complex and beyond the scope of this project. It may also, potentially, violate copyrights and patents by IBM. 
+### Basic Usage
+```bash
+# Start server on default port (3000)
+cargo run
 
-However, a fake AQL mechanism where the user can predefine and match a pre-configured result for a pre-configured AQL query, may be available in the future, to allow for a more holistic experience when using this tool for testing in your pipeline
+# Or run the built binary
+./target/release/mock-radar
+```
 
-###
+### API Examples
+```bash
+# List reference sets
+curl -H "SEC: <your-token>" http://localhost:3000/api/reference_data/sets
 
+# Create a reference set
+curl -X POST \
+  -H "SEC: <your-token>" \
+  "http://localhost:3000/api/reference_data/sets?name=test_ips&element_type=IP"
+```
 
+## Community & Contribution
 
-## Contribution, Collaboration & Licensing
+### Everyone Can Contribute
+You don't need to be a developer! Contributions include:
+- 📝 Documentation improvements and typo fixes
+- 💡 Feature suggestions and use case discussions
+- 🐛 Bug reports and testing feedback
+- 🔧 Code contributions and API endpoint implementations
 
-### Community
+### Discussion & Support
+Join our community discussions for:
+- Feature requests and prioritization
+- Implementation questions
+- Integration experiences
+- General QRadar development topics
 
-You don't have to be a software developer! Feel free to [share your input in the discussions section](https://github.com/DK26/mock-radar/discussions/) and talk about anything.
+**[💬 Start a Discussion](https://github.com/DK26/mock-radar/discussions)**
 
-Contribution could be anything from typo fixes, to sharing ideas, suggestions, issues, experiences, and PRs
+### Development Contributions
+- All contributions are licensed under MIT License
+- **Test-Driven Development**: We implement tests that mimic QRadar API behavior first, then adjust code until tests pass
+- Follow existing code patterns and documentation standards
+
+## Legal & Licensing
 
 ### MIT License
+This project is licensed under the MIT License, promoting community collaboration and widespread adoption.
 
-Everything here is licensed under MIT license since it's simply a mock that mimics API, and shouldn't be something more than a community effort
-
-### Contribution Licensing
-
-You agree that any contribution is licensed under the MIT license
+### Contribution Agreement
+By contributing to this project, you agree that your contributions will be licensed under the MIT License.
 
 ### Disclaimer
+**Important**: This project is an independent, unofficial community effort and has no affiliation with IBM Corporation or the QRadar product. IBM and QRadar are trademarks of IBM Corporation.
 
-This project has nothing to do with the IBM(R) company or the QRadar (IBM's trademark) project and is simply an unofficial community effort. Use at your own risk under the restrictions of the MIT license
+- Use at your own risk under MIT License terms
+- [IBM Trademark Information](https://www.ibm.com/docs/en/zsms1/1.8.0?topic=notices-trademarks)
 
-- IBM Trademarks: [https://www.ibm.com/docs/en/zsms1/1.8.0?topic=notices-trademarks](https://www.ibm.com/docs/en/zsms1/1.8.0?topic=notices-trademarks)  
+---
+
+**Ready to mock your QRadar integration?** Get started with the installation guide above or join our community discussions!
