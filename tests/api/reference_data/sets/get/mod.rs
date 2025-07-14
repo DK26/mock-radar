@@ -1,1 +1,1 @@
-pub(crate) mod get_reference_set_with_sec_token_success;
+pub(crate) mod valid_sec_token_get_reference_set_success;
