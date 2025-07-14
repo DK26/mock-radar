@@ -39,11 +39,13 @@ To maximize value, we prioritize endpoints based on:
 1. **State-Mutating Operations**: Endpoints that update and retrieve data dynamically
 2. **Most Common Use Cases**:
    - **Reference Sets** ✅ *Currently Implemented*
-   - **Offenses** 🚧 *Planned*
-   - **Custom Actions** 🚧 *Planned*
+   - **Offenses** 🚧 *Next Priority*
    - **Log Sources** 🚧 *Planned*
-   - **Properties** 🚧 *Planned*
+   - **Custom Properties** 🚧 *Planned*
    - **Rules** 🚧 *Planned*
+   - **Ariel Search** 🚧 *Future*
+
+> **📋 [View Detailed Roadmap](ROADMAP.md)** - See development phases, ROI analysis, and timeline
 
 > **Help Us Prioritize**: Open an issue or start a discussion to suggest which endpoints you need most. Pull requests with comprehensive tests are always welcome!
 
