@@ -1,30 +1,25 @@
-use axum::{
-    body::Body,
-    http::{self, Request, StatusCode},
+use axum::http::StatusCode;
+
+use mock_radar::{SharedQRadarMock, REGISTERED_SEC_TOKEN};
+
+use crate::{
+    api::reference_data::sets::ENDPOINT_URI,
+    common::{test_request_builder::api_versions, TestRequest},
 };
-use tower::ServiceExt; // for `call`, `oneshot`, and `ready`
-
-use mock_radar::SharedQRadarMock;
-
-use crate::api::reference_data::sets::ENDPOINT_URI;
 
 #[tokio::test]
 pub(crate) async fn get_reference_set_with_sec_token_success() {
     let shared_qradar_mock = SharedQRadarMock::default();
-    let router = mock_radar::create_routes();
 
-    let response = router
-        .with_state(shared_qradar_mock)
-        .oneshot(
-            Request::builder()
-                .method(http::Method::GET)
-                .uri(ENDPOINT_URI)
-                .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-                .body(Body::empty())
-                .expect("could not build request"),
-        )
+    TestRequest::get(ENDPOINT_URI)
+        .with_mock(shared_qradar_mock)
+        .content_type(mime::APPLICATION_JSON)
+        .accept(mime::APPLICATION_JSON)
+        .version(api_versions::V12_0)
+        .sec_token(REGISTERED_SEC_TOKEN)
+        .send()
         .await
-        .expect("could not get response");
+        .assert_status(StatusCode::OK);
 
-    assert_eq!(response.status(), StatusCode::OK);
+    todo!("Complete this test to verify response body and status code");
 }

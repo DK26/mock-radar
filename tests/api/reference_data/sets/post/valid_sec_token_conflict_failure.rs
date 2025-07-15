@@ -1,50 +1,33 @@
-use axum::{
-    body::Body,
-    http::{self, Request, StatusCode},
-};
+use axum::http::StatusCode;
 
 use serde_json::json;
-use tower::ServiceExt; // for `call`, `oneshot`, and `ready`
 
 use mock_radar::{SharedQRadarMock, REGISTERED_SEC_TOKEN};
 
 use super::TestPostResponse;
 use crate::api::reference_data::sets::{post::CreationTime, ENDPOINT_URI};
+use crate::common::{test_request_builder::api_versions, TestRequest};
 
 #[tokio::test]
 pub(crate) async fn post_reference_set_with_sec_token_conflict_failure() {
     let shared_qradar_mock = SharedQRadarMock::default();
-    let router = mock_radar::create_routes();
 
-    let name = urlencoding::encode("test_ip_addresses");
-    let element_type = urlencoding::encode("IP");
+    let name = "test_ip_addresses";
+    let element_type = "IP";
 
-    let uri = format!("{ENDPOINT_URI}?element_type={element_type}&name={name}");
-
-    let response = router
-        .clone()
-        .with_state(shared_qradar_mock.clone())
-        .oneshot(
-            Request::builder()
-                .method(http::Method::POST)
-                .uri(&uri)
-                .header("Version", "12.0")
-                .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-                .header(http::header::ACCEPT, mime::APPLICATION_JSON.as_ref())
-                .header("SEC", REGISTERED_SEC_TOKEN)
-                .body(Body::empty())
-                .expect("could not build request"),
-        )
+    // First request: Create reference set successfully
+    let response_body = TestRequest::post(ENDPOINT_URI)
+        .with_mock(shared_qradar_mock.clone())
+        .content_type(mime::APPLICATION_JSON)
+        .accept(mime::APPLICATION_JSON)
+        .version(api_versions::V12_0)
+        .sec_token(REGISTERED_SEC_TOKEN)
+        .query_param("element_type", element_type)
+        .query_param("name", name)
+        .send()
         .await
-        .expect("could not get response");
-
-    assert_eq!(response.status(), StatusCode::CREATED);
-
-    let response_body_bytes = axum::body::to_bytes(response.into_body(), usize::MAX)
-        .await
-        .expect("cannot convert response to Bytes");
-    let response_body: TestPostResponse = serde_json::from_slice(&response_body_bytes)
-        .expect("cannot deserialize response from Bytes");
+        .assert_status(StatusCode::CREATED)
+        .assert_deserializes_to::<TestPostResponse>();
 
     assert_eq!(
         response_body,
@@ -58,32 +41,22 @@ pub(crate) async fn post_reference_set_with_sec_token_conflict_failure() {
         }
     );
 
-    let response = router
-        .with_state(shared_qradar_mock)
-        .oneshot(
-            Request::builder()
-                .method(http::Method::POST)
-                .uri(&uri)
-                .header("Version", "12.0")
-                .header(http::header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-                .header(http::header::ACCEPT, mime::APPLICATION_JSON.as_ref())
-                .header("SEC", REGISTERED_SEC_TOKEN)
-                .body(Body::empty())
-                .expect("could not build request"),
-        )
+    // Second request: Try to create the same reference set again (should conflict)
+    let conflict_response = TestRequest::post(ENDPOINT_URI)
+        .with_mock(shared_qradar_mock)
+        .content_type(mime::APPLICATION_JSON)
+        .accept(mime::APPLICATION_JSON)
+        .version(api_versions::V12_0)
+        .sec_token(REGISTERED_SEC_TOKEN)
+        .query_param("element_type", element_type)
+        .query_param("name", name)
+        .send()
         .await
-        .expect("could not get response");
-
-    assert_eq!(response.status(), StatusCode::CONFLICT);
-
-    let response_body_bytes = axum::body::to_bytes(response.into_body(), usize::MAX)
-        .await
-        .expect("cannot convert response to Bytes");
-    let response_body: serde_json::Value = serde_json::from_slice(&response_body_bytes)
-        .expect("cannot deserialize response from Bytes");
+        .assert_status(StatusCode::CONFLICT)
+        .assert_deserializes_to::<serde_json::Value>();
 
     assert_eq!(
-        response_body,
+        conflict_response,
         json!(
             {
                 "http_response": {
